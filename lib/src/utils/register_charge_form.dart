@@ -1,9 +1,16 @@
+import 'package:chicken_app/src/models/charge_model.dart';
+import 'package:chicken_app/src/pages/home_page.dart';
+import 'package:chicken_app/src/providers/charge_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:intl/intl.dart';
 
 class ChargeForm extends StatelessWidget {
 
   static GlobalKey<FormState> formChargeKey = new GlobalKey<FormState>();
+
+  final chargeModel = new ChargeModel();
+  final chargeProvider = new ChargeProvider();
 
   @override
   Widget build(BuildContext context) {
@@ -27,85 +34,105 @@ class ChargeForm extends StatelessWidget {
             ),
             margin: EdgeInsets.all(20.0),
             padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
-            child: Form(
-              key: formChargeKey,
-              autovalidate: false,
-              child: Scrollbar(
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>[
-                      Center(
-                        child: Text('Registrar Encargo', style: TextStyle(color: Colors.black, fontSize: 22.0),),
-                      ),
-                      SizedBox(height: _screenHeight*0.02),
-                      TextFormField(
-                        cursorColor: Colors.blueGrey,
-                        decoration: InputDecoration(
-                          filled: true,
-                          icon: Icon(Icons.flight_takeoff),
-                          labelText: 'Destino*',
-                          hintText: 'Escoja destino',
-                        ),
-                        keyboardType: TextInputType.text,
-                      ),
-                      SizedBox(height: _screenHeight*0.02),
-                      TextFormField(
-                        cursorColor: Colors.blueGrey,
-                        decoration: InputDecoration(
-                          filled: true,
-                          icon: Icon(Icons.perm_identity),
-                          labelText: 'Cliente*',
-                          hintText: 'Ingrese el cliente aqui',
-                        ),
-                        keyboardType: TextInputType.text,
-                      ),
-                      SizedBox(height: _screenHeight*0.02),
-                      TextFormField(
-                        cursorColor: Colors.blueGrey,
-                        decoration: InputDecoration(
-                          filled: true,
-                          icon: Icon(FontAwesome.truck),
-                          labelText: 'Conductor*',
-                          hintText: 'Digite el nombre del conductor',
-                        ),
-                        keyboardType: TextInputType.text,
-                      ),
-                      SizedBox(height: _screenHeight*0.02),
-                      TextFormField(
-                        cursorColor: Colors.blueGrey,
-                        decoration: InputDecoration(
-                          filled: true,
-                          icon: Icon(Icons.dialpad),
-                          labelText: 'Cantidad*',
-                          hintText: 'Digite la cantidad de cajas',
-                        ),
-                        keyboardType: TextInputType.number,
-                      ),
-                      SizedBox(height: _screenHeight*0.05),
-                      Center(
-                          child: ButtonTheme(
-                            minWidth: _screenWidth*0.4,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: new BorderRadius.circular(18.0),
-                                side: BorderSide(color: Color.fromRGBO(254, 206, 46,  1))
-                            ),
-                            child: RaisedButton(
-                              color: Color.fromRGBO(254, 206, 46,  1),
-                              textColor: Colors.black,
-                              child: Text("Registrar", style: TextStyle(fontSize: 15.0),),
-                              onPressed: () {},
-                            ),
-                          )
-                      )
-                    ],
-                  ),
-                ),
-              ),
-            ),
+            child: _buildForm(_screenHeight, _screenWidth),
           ),
         ),
       ),
     );
+  }
+
+  Form _buildForm(double _screenHeight, double _screenWidth) {
+    return Form(
+      key: formChargeKey,
+      autovalidate: false,
+      child: Scrollbar(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Center(
+                child: Text('Registrar Encargo', style: TextStyle(color: Colors.black, fontSize: 22.0),),
+              ),
+              SizedBox(height: _screenHeight*0.02),
+              _buildDestinationfield(),
+              SizedBox(height: _screenHeight*0.02),
+              _buildClientField(),
+              SizedBox(height: _screenHeight*0.02),
+              _buildQuantityField(),
+              SizedBox(height: _screenHeight*0.05),
+              _buildButton(_screenWidth)
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  TextFormField _buildQuantityField() {
+    return TextFormField(
+      cursorColor: Colors.blueGrey,
+      decoration: InputDecoration(
+        filled: true,
+        icon: Icon(Icons.dialpad),
+        labelText: 'Cantidad*',
+        hintText: 'Digite la cantidad de cajas',
+      ),
+      keyboardType: TextInputType.number,
+      onSaved: (value) => chargeModel.quantity = int.parse(value),
+    );
+  }
+
+  TextFormField _buildClientField() {
+    return TextFormField(
+      cursorColor: Colors.blueGrey,
+      decoration: InputDecoration(
+        filled: true,
+        icon: Icon(Icons.perm_identity),
+        labelText: 'Cliente*',
+        hintText: 'Ingrese el cliente aqui',
+      ),
+      keyboardType: TextInputType.text,
+      onSaved: (value) => chargeModel.client = value,
+    );
+  }
+
+  TextFormField _buildDestinationfield() {
+    return TextFormField(
+      cursorColor: Colors.blueGrey,
+      decoration: InputDecoration(
+        filled: true,
+        icon: Icon(Icons.flight_takeoff),
+        labelText: 'Destino*',
+        hintText: 'Escoja destino',
+      ),
+      keyboardType: TextInputType.text,
+      onSaved: (value) => chargeModel.destination = value,
+    );
+  }
+
+  Center _buildButton(double _screenWidth) {
+    return Center(
+        child: ButtonTheme(
+          minWidth: _screenWidth*0.4,
+          shape: RoundedRectangleBorder(
+              borderRadius: new BorderRadius.circular(18.0),
+              side: BorderSide(color: Color.fromRGBO(254, 206, 46,  1))
+          ),
+          child: RaisedButton(
+            color: Color.fromRGBO(254, 206, 46,  1),
+            textColor: Colors.black,
+            child: Text("Registrar", style: TextStyle(fontSize: 15.0),),
+            onPressed: () => _submitForm(),
+          ),
+        )
+    );
+  }
+
+  _submitForm(){
+    formChargeKey.currentState.save();
+    chargeModel.state = 'Generado';
+    chargeModel.date = DateFormat('dd/MM/yyyy').format(DateTime.now()).toString();
+    chargeProvider.addCharge(chargeModel);
+    formChargeKey.currentState.reset();
   }
 }

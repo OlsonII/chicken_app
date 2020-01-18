@@ -9,7 +9,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 
 class HomePage extends StatefulWidget {
-
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -21,13 +20,18 @@ class _HomePageState extends State<HomePage> {
   double _screenWidth = 0.0;
   double _screenHeight = 0.0;
 
-
-
   List<Widget> _pages = [
     ChargesPage(),
     DriversPage(),
+    Container(),
     Container()
   ];
+
+  @override
+  void initState() {
+    showContainer = true;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,32 +63,32 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildFloatingActionButton() {
     return FloatingActionButton(
-        child: showContainer ? Icon(Icons.add, color: Colors.black) : Icon(Icons.arrow_upward, color: Colors.black),
-        onPressed: () {
-          setState(() {
-            showContainer ? showContainer = false : showContainer = true;
-          });
-        },
-        backgroundColor: Color.fromRGBO(254, 206, 46,  1),
-      );
+      child: showContainer ? Icon(Icons.add, color: Colors.blueGrey) : Icon(Icons.arrow_upward, color: Colors.blueGrey),
+      onPressed: () {
+        setState(() {
+          showContainer ? showContainer = false : showContainer = true;
+        });
+      },
+      backgroundColor: Color.fromRGBO(254, 206, 46,  1),
+    );
   }
 
   Widget _buildPrincipalContainer() {
     return AnimatedPositioned(
-            top: showContainer ? _screenHeight*0.27 : _screenHeight*0.85,
-            bottom: -100,
-            duration: Duration(milliseconds: 500),
-            curve: Curves.fastOutSlowIn,
-            child: Container(
-              height: _screenHeight,
-              width: _screenWidth*0.999,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(topRight: Radius.circular(30), topLeft: Radius.circular(30)),
-                color: Colors.white
-              ),
-              child: _pages[_selectedIndex],
-            ),
-          );
+      top: showContainer ? _screenHeight*0.27 : _screenHeight*0.85,
+      bottom: -100,
+      duration: Duration(milliseconds: 500),
+      curve: Curves.fastOutSlowIn,
+      child: Container(
+        height: _screenHeight,
+        width: _screenWidth*0.999,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.only(topRight: Radius.circular(30), topLeft: Radius.circular(30)),
+            color: Colors.white
+        ),
+        child: showContainer ? _pages[_selectedIndex] : Container(),
+      ),
+    );
   }
 
   Widget _buildSelectedForm() {
@@ -104,31 +108,31 @@ class _HomePageState extends State<HomePage> {
 
   Container _buildPrincipalInformation() {
     return Container(
-            width: double.infinity,
-            height: double.infinity,
-            color: Color.fromRGBO(254, 206, 46,  1),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(top: 40, left: 30),
-                  child: Text('Cantidad de pollos recibidos:', style: TextStyle(color: Colors.black, fontSize: 20),),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 10, left: 30),
-                  child: Text('0', style: TextStyle(color: Colors.black, fontSize: 40),),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 10, left: 30),
-                  child: Text('Cantidad de pollos enviados:', style: TextStyle(color: Colors.black, fontSize: 20),),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 10, left: 30),
-                  child: Text('0', style: TextStyle(color: Colors.black, fontSize: 40),),
-                )
-              ],
-            ),
-          );
+      width: double.infinity,
+      height: double.infinity,
+      color: Color.fromRGBO(254, 206, 46,  1),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(top: 40, left: 30),
+            child: Text('Cantidad de pollos recibidos:', style: TextStyle(color: Colors.black, fontSize: 20),),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 10, left: 30),
+            child: Text('0', style: TextStyle(color: Colors.black, fontSize: 40),),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 10, left: 30),
+            child: Text('Cantidad de pollos enviados:', style: TextStyle(color: Colors.black, fontSize: 20),),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 10, left: 30),
+            child: Text('0', style: TextStyle(color: Colors.black, fontSize: 40),),
+          )
+        ],
+      ),
+    );
   }
 
   Widget bottomNavigationBar(){
@@ -138,11 +142,12 @@ class _HomePageState extends State<HomePage> {
         currentIndex: _selectedIndex,
         onTap: _changePage,
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-        elevation: 0,
+        elevation: 5.0,
         fabLocation: BubbleBottomBarFabLocation.end, //new
         hasNotch: true, //new
         hasInk: true, //new, gives a cute ink effect
         inkColor: Colors.black12, //optional, uses theme color if not specified
+        backgroundColor: Colors.white,
         items: bottomNavigationBarItems()
     );
   }
