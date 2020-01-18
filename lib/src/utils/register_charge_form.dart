@@ -1,9 +1,12 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:chicken_app/src/models/charge_model.dart';
 import 'package:chicken_app/src/pages/home_page.dart';
 import 'package:chicken_app/src/providers/charge_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:intl/intl.dart';
+
+//TODO: IMPLEMENT DIALOGS: https://flutterawesome.com/a-new-flutter-package-project-for-simple-and-awesome-dialogs/
 
 class ChargeForm extends StatelessWidget {
 
@@ -34,14 +37,14 @@ class ChargeForm extends StatelessWidget {
             ),
             margin: EdgeInsets.all(20.0),
             padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
-            child: _buildForm(_screenHeight, _screenWidth),
+            child: _buildForm(context, _screenHeight, _screenWidth),
           ),
         ),
       ),
     );
   }
 
-  Form _buildForm(double _screenHeight, double _screenWidth) {
+  Form _buildForm(BuildContext context, double _screenHeight, double _screenWidth) {
     return Form(
       key: formChargeKey,
       autovalidate: false,
@@ -60,7 +63,7 @@ class ChargeForm extends StatelessWidget {
               SizedBox(height: _screenHeight*0.02),
               _buildQuantityField(),
               SizedBox(height: _screenHeight*0.05),
-              _buildButton(_screenWidth)
+              _buildButton(context, _screenWidth)
             ],
           ),
         ),
@@ -110,7 +113,7 @@ class ChargeForm extends StatelessWidget {
     );
   }
 
-  Center _buildButton(double _screenWidth) {
+  Center _buildButton(BuildContext context, double _screenWidth) {
     return Center(
         child: ButtonTheme(
           minWidth: _screenWidth*0.4,
@@ -122,14 +125,27 @@ class ChargeForm extends StatelessWidget {
             color: Color.fromRGBO(254, 206, 46,  1),
             textColor: Colors.black,
             child: Text("Registrar", style: TextStyle(fontSize: 15.0),),
-            onPressed: () => _submitForm(),
+            onPressed: () => _showAlert(context),
           ),
         )
     );
   }
 
-  _submitForm(){
+  _showAlert(BuildContext context){
     formChargeKey.currentState.save();
+    return AwesomeDialog(
+      context: context,
+      dialogType: DialogType.INFO,
+      animType: AnimType.BOTTOMSLIDE,
+      tittle: 'Desea completar este registro?',
+      desc: '${chargeModel.quantity} cajas para ${chargeModel.client} en ${chargeModel.destination}',
+      btnCancelOnPress: (){},
+      btnOkOnPress: () => _submitForm()
+    ).show();
+  }
+
+  _submitForm(){
+    print('registro completado');
     chargeModel.state = 'Generado';
     chargeModel.date = DateFormat('dd/MM/yyyy').format(DateTime.now()).toString();
     chargeProvider.addCharge(chargeModel);

@@ -11,7 +11,6 @@ class ChargeProvider {
 
   Future<List<ChargeModel>> getCharges() async {
     try{
-      chargeBloc.getAllCharges();
       final response = await http.get(_URL);
       final decodedData = jsonDecode(response.body);
       final List<ChargeModel> charges = new List();
@@ -86,7 +85,7 @@ class ChargeProvider {
   Future<bool> editChargeState(ChargeModel chargeModel) async {
     print(chargeModel);
     print(chargeModelToJson(chargeModel));
-    return await http.put(_URL+'/${chargeModel.id}', headers: {'content-type': 'application/json'},body: chargeModelToJson(chargeModel))
+    return await http.put(_URL+'/${chargeModel.id}', headers: {'content-type': 'application/json'}, body: chargeModelToJson(chargeModel))
         .then((response) => true)
         .catchError((onError) => onError);
   }
