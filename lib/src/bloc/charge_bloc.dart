@@ -1,5 +1,4 @@
 import 'package:chicken_app/src/models/charge_model.dart';
-import 'package:chicken_app/src/models/driver_model.dart';
 import 'package:chicken_app/src/providers/charge_provider.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -12,8 +11,8 @@ class ChargeBloc {
 
 
   getAllCharges() async {
-    //final charges = await _chargeRProvider.getCharges();
-    //_chargeController.sink.add(charges);
+    final charges = await _chargeRProvider.getCharges();
+    _chargeController.sink.add(charges);
   }
 
   dispose(){
@@ -23,5 +22,3 @@ class ChargeBloc {
 }
 
 final chargeBloc = ChargeBloc();
-
-

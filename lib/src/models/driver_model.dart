@@ -8,36 +8,32 @@ String driverModelToJson(DriverModel data) => json.encode(data.toJson());
 
 class DriverModel {
   String identification;
-  String firstname;
-  String lastname;
+  String name;
+  String licencePlate;
   String phone;
   String state;
-  List<ChargeModel> charge;
 
   DriverModel({
     this.identification,
-    this.firstname,
-    this.lastname,
+    this.name,
+    this.licencePlate,
     this.phone,
     this.state,
-    this.charge,
   });
 
   factory DriverModel.fromJson(Map<String, dynamic> json) => DriverModel(
     identification: json["identification"],
-    firstname: json["firstname"],
-    lastname: json["lastname"],
+    name: json["name"],
+    licencePlate: json["licence_plate"],
     phone: json["phone"],
     state: json["state"],
-    charge: List<ChargeModel>.from(json["charge"].map((x) => ChargeModel.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
     "identification": identification,
-    "firstname": firstname,
-    "lastname": lastname,
+    "name": name,
+    "licence_plate": licencePlate,
     "phone": phone,
     "state": state,
-    "charge": List<dynamic>.from(charge.map((x) => x.toJson())),
   };
 }

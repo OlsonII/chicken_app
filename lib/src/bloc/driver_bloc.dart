@@ -4,15 +4,15 @@ import 'package:rxdart/rxdart.dart';
 
 class DriverBloc {
 
-  final _driverRProvider = DriverProvider();
+  final _driverProvider = DriverProvider();
   final _driversController = PublishSubject<List<DriverModel>>();
 
   Stream<List<DriverModel>> get allDrivers => _driversController.stream;
 
 
   getAllDrivers() async {
-    //_driverRepository.getAllDrivers
-    //_driversController.sink.add();
+    final drivers = await _driverProvider.getDrivers();
+    _driversController.sink.add(drivers);
   }
 
   dispose(){

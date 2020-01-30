@@ -30,7 +30,7 @@ class ChargeProvider {
 
   Future<List<ChargeModel>> getChargesByState(String state) async {
     try{
-      final response = await http.get(_URL+'/$state');
+      final response = await http.get(_URL+'/state/$state');
       final decodedData = jsonDecode(response.body);
       final List<ChargeModel> charges = new List();
 
@@ -50,6 +50,25 @@ class ChargeProvider {
   Future<List<ChargeModel>> getChargesByDate(String date) async {
     try{
       final response = await http.get(_URL+'/$date');
+      final decodedData = jsonDecode(response.body);
+      final List<ChargeModel> charges = new List();
+
+      if(decodedData == null) return [];
+
+      decodedData.forEach((charge){
+        final chargeTemp = ChargeModel.fromJson(charge);
+        charges.add(chargeTemp);
+      });
+
+      return charges;
+    }catch(e){
+      print(e);
+    }
+  }
+
+  Future<List<ChargeModel>> getChargesByDriver(String driverId) async {
+    try{
+      final response = await http.get(_URL+'/driver/$driverId');
       final decodedData = jsonDecode(response.body);
       final List<ChargeModel> charges = new List();
 

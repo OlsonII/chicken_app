@@ -1,4 +1,5 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:chicken_app/src/models/charge_model.dart';
 import 'package:chicken_app/src/models/driver_model.dart';
 import 'package:chicken_app/src/providers/driver_provider.dart';
 import 'package:flutter/material.dart';
@@ -59,9 +60,9 @@ class DriverForm extends StatelessWidget {
               SizedBox(height: _screenHeight*0.02),
               _buildIdentificationField(),
               SizedBox(height: _screenHeight*0.02),
-              _buildFirstnameField(),
+              _buildNameField(),
               SizedBox(height: _screenHeight*0.02),
-              _buildLastnameField(),
+              _buildLicencePlateField(),
               SizedBox(height: _screenHeight*0.02),
               _buildPhoneField(),
               SizedBox(height: _screenHeight*0.05),
@@ -93,78 +94,114 @@ class DriverForm extends StatelessWidget {
 
   TextFormField _buildPhoneField() {
     return TextFormField(
-      cursorColor: Colors.blueGrey,
+      cursorColor: Colors.blue,
       decoration: InputDecoration(
         filled: true,
         icon: Icon(Icons.dialpad),
         labelText: 'Telefono*',
         hintText: 'Digite el telefono del conductor',
       ),
+      autovalidate: false,
       keyboardType: TextInputType.number,
       onSaved: (value) => driverModel.phone = value,
+      validator: (value) => _validatePhone(value),
     );
   }
 
-  TextFormField _buildLastnameField() {
+  TextFormField _buildLicencePlateField() {
     return TextFormField(
-      cursorColor: Colors.blueGrey,
+      cursorColor: Colors.blue,
       decoration: InputDecoration(
         filled: true,
-        icon: Icon(Icons.perm_identity),
-        labelText: 'Apellido*',
-        hintText: 'Digite el apellido del conductor',
+        icon: Icon(AntDesign.car),
+        labelText: 'Placa*',
+        hintText: 'Digite la plca del vehiculo del conductor',
       ),
+      autovalidate: false,
       keyboardType: TextInputType.text,
-      onSaved: (value) => driverModel.lastname = value,
+      onSaved: (value) => driverModel.licencePlate = value,
+      validator: (value) => _validateLicencePlate(value),
     );
   }
 
-  TextFormField _buildFirstnameField() {
+  TextFormField _buildNameField() {
     return TextFormField(
-      cursorColor: Colors.blueGrey,
+      cursorColor: Colors.blue,
       decoration: InputDecoration(
         filled: true,
         icon: Icon(Icons.perm_identity),
         labelText: 'Nombre*',
         hintText: 'Digite el nombre del conductor',
       ),
+      autovalidate: false,
       keyboardType: TextInputType.text,
-      onSaved: (value) => driverModel.firstname = value,
+      onSaved: (value) => driverModel.name = value,
+      validator: (value) => _validateName(value),
     );
   }
 
   TextFormField _buildIdentificationField() {
     return TextFormField(
-      cursorColor: Colors.blueGrey,
+      cursorColor: Colors.blue,
       decoration: InputDecoration(
         filled: true,
-        icon: Icon(Icons.contact_mail),
+        icon: Icon(FontAwesome.address_card),
         labelText: 'Identificacion*',
         hintText: 'Digite la identificacion del conductor',
       ),
-      keyboardType: TextInputType.text,
+      autovalidate: false,
+      keyboardType: TextInputType.number,
       onSaved: (value) => driverModel.identification = value,
+      validator: (value) => _validateIdentification(value),
     );
   }
 
   _showAlert(BuildContext context){
-    formDriverKey.currentState.save();
-    return AwesomeDialog(
-        context: context,
-        dialogType: DialogType.INFO,
-        animType: AnimType.BOTTOMSLIDE,
-        tittle: 'Desea completar este registro?',
-        desc: '${driverModel.firstname} ${driverModel.lastname} identificado con ${driverModel.identification}',
-        btnCancelOnPress: (){},
-        btnOkOnPress: () => _submitForm()
-    ).show();
+    if(formDriverKey.currentState.validate()){
+      formDriverKey.currentState.save();
+      return AwesomeDialog(
+          context: context,
+          dialogType: DialogType.INFO,
+          animType: AnimType.BOTTOMSLIDE,
+          tittle: 'Desea completar este registro?',
+          desc: '${driverModel.name} ${driverModel.licencePlate} identificado con ${driverModel.identification}',
+          btnCancelOnPress: (){},
+          btnOkOnPress: () => _submitForm()
+      ).show();
+    }
   }
 
   _submitForm(){
-    print('driver register');
     driverModel.state = 'Inactivo';
-    driverModel.charge = [];
     driverProvider.addDriver(driverModel);
     formDriverKey.currentState.reset();
+  }
+
+  _validateIdentification(String value) {
+    if(value.length < 8)
+      return 'Por favor ingrese una identificacion valida';
+    else
+      return null;
+  }
+
+  _validatePhone(String value) {
+    if(value.length < 10)
+      return 'Por favor ingrese un telefono valido';
+    else
+      return null;
+  }
+
+  _validateName(String value) {
+    if(value.length < 4)
+      return 'Por favor ingrese un nombre valido';
+    else
+      return null;
+  }
+
+  _validateLicencePlate(String value) {
+    if(value.length < 6 || value.length > 7)
+      return 'Por favor ingrese una placa valida';
+    else
+      return null;
   }
 }
