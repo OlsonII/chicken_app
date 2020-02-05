@@ -1,24 +1,34 @@
-import 'package:chicken_app/src/models/driver_model.dart';
+import 'package:chicken_app/src/bloc/driver_event.dart';
+import 'package:chicken_app/src/bloc/driver_state.dart';
 import 'package:chicken_app/src/providers/driver_provider.dart';
-import 'package:rxdart/rxdart.dart';
+import 'package:bloc/bloc.dart';
 
-class DriverBloc {
+class DriverBloc extends Bloc<DriverEvent, DriverState> {
+
+  DriverBloc();
 
   final _driverProvider = DriverProvider();
-  final _driversController = PublishSubject<List<DriverModel>>();
 
-  Stream<List<DriverModel>> get allDrivers => _driversController.stream;
+  @override
+  DriverState get initialState => DriversEmpty();
 
+  @override
+  Stream<DriverState> mapEventToState(DriverEvent event) async* {
 
-  getAllDrivers() async {
-    final drivers = await _driverProvider.getDrivers();
-    _driversController.sink.add(drivers);
-  }
+    if(event is AddDriver){
 
-  dispose(){
-    _driversController.close();
+      yield DriversLoading();
+      await _driverProvider.addDriver(event.driver);
+      yield DriversLoaded(drivers: await _driverProvider.getDrivers());
+
+    }else if(event is GetDrivers){
+
+      yield DriversLoading();
+      final drivers = await _driverProvider.getDrivers();
+      yield DriversLoaded(drivers: drivers);
+
+    }
+
   }
 
 }
-
-final driverBloc = DriverBloc();

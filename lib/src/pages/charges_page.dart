@@ -1,29 +1,34 @@
 import 'dart:ui';
-
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:chicken_app/src/bloc/charge_bloc.dart';
+import 'package:chicken_app/src/bloc/charge_event.dart';
+import 'package:chicken_app/src/bloc/charge_state.dart';
 import 'package:chicken_app/src/bloc/driver_bloc.dart';
+import 'package:chicken_app/src/bloc/driver_state.dart';
 import 'package:chicken_app/src/models/charge_model.dart';
-import 'package:chicken_app/src/models/driver_model.dart';
 import 'package:chicken_app/src/providers/charge_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
 class ChargesPage extends StatelessWidget {
 
   final chargesProvider = new ChargeProvider();
+  ChargeBloc _chargeBlocII;
 
   @override
   Widget build(BuildContext context) {
-    chargeBloc.getAllCharges();
-    return StreamBuilder(
-      stream: chargeBloc.allCharges,
-      builder: (BuildContext context, AsyncSnapshot<List> snapshot){
-        if(snapshot.hasData){
-          final charges = snapshot.data;
+
+    _chargeBlocII = BlocProvider.of<ChargeBloc>(context);
+    _chargeBlocII.add(GetCharges());
+
+    return BlocBuilder<ChargeBloc, ChargeState>(
+      builder: (context, state){
+
+        if(state is ChargesLoaded){
           return ListView.builder(
-              itemCount: charges.length,
-              itemBuilder: (context, i) => _createItem(context, charges[i])
+              itemCount: state.charges.length,
+              itemBuilder: (context, i) => _createItem(context, state.charges[i])
           );
         }else{
           return Center(child: CircularProgressIndicator());
@@ -112,13 +117,11 @@ class ChargesPage extends StatelessWidget {
   }
 
   _showDriverInfoAlert(BuildContext context, String driverId) {
-    print('searching driver');
-    StreamBuilder(
-      stream: driverBloc.allDrivers,
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if(snapshot.hasData){
+    BlocBuilder<DriverBloc, DriverState>(
+      builder: (context, state) {
+        if(state is DriversLoaded){
           // ignore: missing_return
-          snapshot.data.forEach((driver){
+          state.drivers.forEach((driver){
             if (driver.identification == driverId){
               AwesomeDialog(
                   context: context,
@@ -127,7 +130,7 @@ class ChargesPage extends StatelessWidget {
                   body: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text('IDENTIFICACION: ${driver.destination}'),
+                      Text('IDENTIFICACION: ${driver.identification}'),
                       Text('NOMBRE: ${driver.name}'),
                       Text('PLACA: ${driver.licencePlate}'),
                       Text('TELEFONO: ${driver.phone}'),

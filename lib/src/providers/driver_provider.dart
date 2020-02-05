@@ -1,9 +1,9 @@
 import 'dart:convert';
-
 import 'package:chicken_app/src/models/driver_model.dart';
 import 'package:http/http.dart' as http;
 
 class DriverProvider{
+
   static const String _URL = 'http://192.168.0.28:3000/api/drivers';
 
   Future<List<DriverModel>> getDrivers() async {

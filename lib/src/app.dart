@@ -3,7 +3,10 @@ import 'package:chicken_app/src/pages/home_page.dart';
 import 'package:chicken_app/src/pages/splash_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
+
+import 'bloc/driver_bloc.dart';
 
 class App extends StatelessWidget {
   // This widget is the root of your application.

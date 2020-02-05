@@ -1,8 +1,9 @@
-import 'package:chicken_app/src/models/charge_model.dart';
+import 'package:chicken_app/src/bloc/charge_event.dart';
+import 'package:chicken_app/src/bloc/charge_state.dart';
 import 'package:chicken_app/src/providers/charge_provider.dart';
-import 'package:rxdart/rxdart.dart';
+import 'package:bloc/bloc.dart';
 
-class ChargeBloc {
+/*class ChargeBloc {
 
   final _chargeRProvider = ChargeProvider();
   final _chargeController = PublishSubject<List<ChargeModel>>();
@@ -21,4 +22,34 @@ class ChargeBloc {
 
 }
 
-final chargeBloc = ChargeBloc();
+final chargeBloc = ChargeBloc();*/
+
+class ChargeBloc extends Bloc<ChargeEvent, ChargeState> {
+
+  ChargeBloc();
+
+  final _chargeProvider = ChargeProvider();
+
+  @override
+  ChargeState get initialState => ChargesEmpty();
+
+  @override
+  Stream<ChargeState> mapEventToState(ChargeEvent event) async* {
+
+    if(event is AddCharge){
+
+      yield ChargesLoading();
+      await _chargeProvider.addCharge(event.charge);
+      yield ChargesLoaded(charges: await _chargeProvider.getCharges());
+
+    }else if(event is GetCharges){
+
+      yield ChargesLoading();
+      final charges = await _chargeProvider.getCharges();
+      yield ChargesLoaded(charges: charges);
+
+    }
+
+  }
+
+}

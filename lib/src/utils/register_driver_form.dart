@@ -1,19 +1,25 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:chicken_app/src/models/charge_model.dart';
+import 'package:chicken_app/src/bloc/driver_bloc.dart';
+import 'package:chicken_app/src/bloc/driver_event.dart';
 import 'package:chicken_app/src/models/driver_model.dart';
 import 'package:chicken_app/src/providers/driver_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 
 class DriverForm extends StatelessWidget {
 
   static GlobalKey<FormState> formDriverKey = new GlobalKey<FormState>();
 
+  DriverBloc _driverBlocII;
+
   final driverModel = new DriverModel();
   final driverProvider = new DriverProvider();
 
   @override
   Widget build(BuildContext context) {
+
+    _driverBlocII = BlocProvider.of<DriverBloc>(context);
 
     final _deviceData = MediaQuery.of(context);
     final _screenHeight = _deviceData.size.height;
@@ -166,14 +172,15 @@ class DriverForm extends StatelessWidget {
           tittle: 'Desea completar este registro?',
           desc: '${driverModel.name} ${driverModel.licencePlate} identificado con ${driverModel.identification}',
           btnCancelOnPress: (){},
-          btnOkOnPress: () => _submitForm()
+          btnOkOnPress: () => _submitForm(context)
       ).show();
     }
   }
 
-  _submitForm(){
+  _submitForm(BuildContext context){
     driverModel.state = 'Inactivo';
-    driverProvider.addDriver(driverModel);
+    //driverProvider.addDriver(driverModel);
+    _driverBlocII.add(AddDriver(driver: driverModel));
     formDriverKey.currentState.reset();
   }
 

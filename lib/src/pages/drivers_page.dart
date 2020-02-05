@@ -1,22 +1,28 @@
 import 'package:chicken_app/src/bloc/driver_bloc.dart';
+import 'package:chicken_app/src/bloc/driver_event.dart';
+import 'package:chicken_app/src/bloc/driver_state.dart';
 import 'package:chicken_app/src/models/driver_model.dart';
 import 'package:chicken_app/src/providers/driver_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class DriversPage extends StatelessWidget {
 
   final driverProvider = new DriverProvider();
+  DriverBloc _driverBlocII;
+
   @override
   Widget build(BuildContext context) {
-    driverBloc.getAllDrivers();
-    return StreamBuilder(
-      stream: driverBloc.allDrivers,
-      builder: (BuildContext context, AsyncSnapshot<List> snapshot){
-        if(snapshot.hasData){
-          final drivers = snapshot.data;
+
+    _driverBlocII = BlocProvider.of<DriverBloc>(context);
+    _driverBlocII.add(GetDrivers());
+
+    return BlocBuilder<DriverBloc, DriverState>(
+      builder: (context, state){
+        if(state is DriversLoaded){
           return ListView.builder(
-              itemCount: drivers.length,
-              itemBuilder: (context, i) => _createItem(context, drivers[i])
+              itemCount: state.drivers.length,
+              itemBuilder: (context, i) => _createItem(context, state.drivers[i])
           );
         }else{
           return Center(child: CircularProgressIndicator());
