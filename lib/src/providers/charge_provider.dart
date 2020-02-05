@@ -102,7 +102,6 @@ class ChargeProvider {
   }
 
   Future<bool> editChargeState(ChargeModel chargeModel) async {
-    print(chargeModel);
     print(chargeModelToJson(chargeModel));
     return await http.put(_URL+'/${chargeModel.id}', headers: {'content-type': 'application/json'}, body: chargeModelToJson(chargeModel))
         .then((response) => true)

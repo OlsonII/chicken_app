@@ -27,7 +27,13 @@ class DriverBloc extends Bloc<DriverEvent, DriverState> {
       final drivers = await _driverProvider.getDrivers();
       yield DriversLoaded(drivers: drivers);
 
+    }else if(event is GetSpecifyDriver){
+      yield DriversLoading();
+      final driver = await _driverProvider.getSpecifyDriver(event.driver.identification);
+      yield DriverLoaded(driver: driver);
     }
+
+
 
   }
 

@@ -13,8 +13,7 @@ class DueForm extends StatelessWidget {
     final _screenWidth = _deviceData.size.width;
 
     return Positioned(
-      top: _screenHeight*0.25,
-      //bottom: _screenHeight*0.15,
+      top: _screenHeight*0.18,
       right: 0,
       left: 0,
       bottom: 10,

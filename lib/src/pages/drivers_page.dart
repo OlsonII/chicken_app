@@ -6,6 +6,7 @@ import 'package:chicken_app/src/providers/driver_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+// ignore: must_be_immutable
 class DriversPage extends StatelessWidget {
 
   final driverProvider = new DriverProvider();
@@ -24,7 +25,10 @@ class DriversPage extends StatelessWidget {
               itemCount: state.drivers.length,
               itemBuilder: (context, i) => _createItem(context, state.drivers[i])
           );
+        }else if(state is DriversEmpty){
+          return Center(child: Text('Sin Informacion'));
         }else{
+          print(state);
           return Center(child: CircularProgressIndicator());
         }
       },
@@ -37,9 +41,10 @@ class DriversPage extends StatelessWidget {
       child: GestureDetector(
         child: ListTile(
           title: Text(driver.name, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
-          subtitle: Text('${driver.state}', style: TextStyle(fontSize: 15, color: driver.state == 'Activo' ? Colors.green : Colors.red)),
+          subtitle: Text('${driver.phone}', style: TextStyle(fontSize: 15)),
+          trailing: Icon(Icons.directions_car, color: driver.state == 'Activo' ? Colors.green : Colors.red),
         ),
-        onTap: () => Navigator.pushNamed(context, '/profile_page', arguments: driver),
+        onTap: () => Navigator.pushNamed(context, '/profile_page', arguments: driver.name),
       ),
     );
   }

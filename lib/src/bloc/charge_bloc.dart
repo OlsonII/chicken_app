@@ -45,8 +45,13 @@ class ChargeBloc extends Bloc<ChargeEvent, ChargeState> {
     }else if(event is GetCharges){
 
       yield ChargesLoading();
-      final charges = await _chargeProvider.getCharges();
-      yield ChargesLoaded(charges: charges);
+      yield ChargesLoaded(charges: await _chargeProvider.getCharges());
+
+    }else if(event is EditChargeState) {
+
+      yield ChargesLoading();
+      await _chargeProvider.editChargeState(event.charge);
+      yield ChargesLoaded(charges: await _chargeProvider.getCharges());
 
     }
 

@@ -52,9 +52,9 @@ class DriverProvider{
         .catchError((onError) => onError);
   }
 
-  Future<DriverModel> getSpecifyDriver(String identification) async{
+  Future<DriverModel> getSpecifyDriver(String name) async{
     try{
-      final response = await http.get(_URL+'/$identification');
+      final response = await http.get(_URL+'/$name');
       final driver = jsonDecode(response.body);
       return DriverModel.fromJson(driver[0]);
     }catch(e){

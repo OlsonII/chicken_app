@@ -3,10 +3,9 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:chicken_app/src/bloc/charge_bloc.dart';
 import 'package:chicken_app/src/bloc/charge_event.dart';
 import 'package:chicken_app/src/bloc/charge_state.dart';
-import 'package:chicken_app/src/bloc/driver_bloc.dart';
-import 'package:chicken_app/src/bloc/driver_state.dart';
 import 'package:chicken_app/src/models/charge_model.dart';
 import 'package:chicken_app/src/providers/charge_provider.dart';
+import 'package:chicken_app/src/utils/globals_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -14,17 +13,17 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 class ChargesPage extends StatelessWidget {
 
   final chargesProvider = new ChargeProvider();
-  ChargeBloc _chargeBlocII;
+  ChargeBloc _chargeBloc;
 
   @override
   Widget build(BuildContext context) {
 
-    _chargeBlocII = BlocProvider.of<ChargeBloc>(context);
-    _chargeBlocII.add(GetCharges());
+    _chargeBloc = BlocProvider.of<ChargeBloc>(context);
+    _chargeBloc.add(GetCharges());
+
 
     return BlocBuilder<ChargeBloc, ChargeState>(
       builder: (context, state){
-
         if(state is ChargesLoaded){
           return ListView.builder(
               itemCount: state.charges.length,
@@ -40,7 +39,8 @@ class ChargesPage extends StatelessWidget {
   _createItem(BuildContext context, ChargeModel charge) {
     return Slidable(
       actionPane: SlidableDrawerActionPane(),
-      actionExtentRatio: 0.25,
+      actionExtentRatio: 0.17,
+      movementDuration: Duration(milliseconds: 50),
       child: Container(
         padding: EdgeInsets.only(left: 8.0, right: 8.0, top: 5.0),
         child: ListTile(
@@ -54,7 +54,7 @@ class ChargesPage extends StatelessWidget {
           caption: 'Conductor',
           icon: Icons.perm_identity,
           color: Colors.red,
-          onTap: () => charge.driver.length > 2 ? _showDriverInfoAlert(context, charge.driver) : _chooseDriver(),
+          onTap: () => charge.driver.length > 2 ? _showDriverProfile(context, charge.driver) : _chooseDriver(),
         )
       ],
       secondaryActions: <Widget>[
@@ -62,16 +62,47 @@ class ChargesPage extends StatelessWidget {
           caption: 'Info',
           icon: Icons.info,
           color: Colors.blue,
-          onTap: () => _showChargeInfoAlert(context, charge)
+          onTap: () => _showChargeInfoAlert(charge)
         ),
-        IconSlideAction(
+        if(charge.state != 'Entregado') _chooseOptionOfCharge(context, charge.state, charge)
+      ],
+    );
+  }
+
+  _chooseOptionOfCharge(BuildContext context, String state, ChargeModel charge){
+    switch(state){
+      case 'Generado':
+        return IconSlideAction(
+          caption: 'Enviar',
+          icon: Icons.flight_takeoff,
+          color: Colors.green,
+          onTap: () => _showDeliverChargeConfirmAlert(charge),
+        );
+        break;
+      case 'Enviado':
+        return IconSlideAction(
           caption: 'Entregar',
           icon: Icons.flight_land,
           color: Colors.green,
-          //onTap: () => _showAlert(context, charge),
-        )
-      ],
-    );
+          onTap: () => _deliverCharge(charge),
+        );
+        break;
+    }
+  }
+
+  _sendCharge(ChargeModel charge){
+    if(charge.driver.isNotEmpty) {
+      charge.state = 'Enviado';
+      _chargeBloc.add(EditChargeState(charge: charge));
+      _showChargeDeliveredAlert();
+    }else{
+      _showNoDriverAlert();
+    }
+  }
+
+  _deliverCharge(ChargeModel charge){
+    charge.state = 'Entregado';
+    _chargeBloc.add(EditChargeState(charge: charge));
   }
 
   _chooseAvatar(String state){
@@ -80,26 +111,27 @@ class ChargesPage extends StatelessWidget {
     switch(state){
       case 'Generado':
         color = Colors.redAccent;
-        icon = Icon(Icons.insert_drive_file, color: Colors.white);
+        //icon = Icon(Icons.insert_drive_file, color: Colors.white);
         break;
       case 'Enviado':
         color =  Color.fromRGBO(254, 206, 46,  1);
-        icon = Icon(Icons.flight_takeoff, color: Colors.blue);
+        //icon = Icon(Icons.flight_takeoff, color: Colors.blue);
         break;
       case 'Entregado':
         color = Colors.green;
-        icon = Icon(Icons.flight_land, color: Colors.white);
+        //icon = Icon(Icons.flight_land, color: Colors.white);
         break;
     }
     return CircleAvatar(
       child: icon,
       backgroundColor: color,
+      radius: 13.0,
     );
   }
 
-  _showChargeInfoAlert(BuildContext context, ChargeModel chargeModel){
+  _showChargeInfoAlert(ChargeModel chargeModel){
       return AwesomeDialog(
-          context: context,
+          context: globalsKeys.scaffoldKey.currentContext,
           dialogType: DialogType.INFO,
           animType: AnimType.BOTTOMSLIDE,
           body: Column(
@@ -116,34 +148,43 @@ class ChargesPage extends StatelessWidget {
       ).show();
   }
 
-  _showDriverInfoAlert(BuildContext context, String driverId) {
-    BlocBuilder<DriverBloc, DriverState>(
-      builder: (context, state) {
-        if(state is DriversLoaded){
-          // ignore: missing_return
-          state.drivers.forEach((driver){
-            if (driver.identification == driverId){
-              AwesomeDialog(
-                  context: context,
-                  dialogType: DialogType.INFO,
-                  animType: AnimType.BOTTOMSLIDE,
-                  body: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text('IDENTIFICACION: ${driver.identification}'),
-                      Text('NOMBRE: ${driver.name}'),
-                      Text('PLACA: ${driver.licencePlate}'),
-                      Text('TELEFONO: ${driver.phone}'),
-                    ],
-                  ),
-                  btnOkOnPress: (){}
-              ).show();
-            }
-          });
-        }
-        return null;
-      },
-    );
+  _showNoDriverAlert(){
+    return AwesomeDialog(
+        context: globalsKeys.scaffoldKey.currentContext,
+        dialogType: DialogType.ERROR,
+        animType: AnimType.BOTTOMSLIDE,
+        tittle: 'Sin conductor',
+        desc: 'Por favor asigne un conductor antes de enviar',
+        btnOkOnPress: (){}
+    ).show();
+  }
+
+  _showDeliverChargeConfirmAlert(ChargeModel charge){
+    return AwesomeDialog(
+        context: globalsKeys.scaffoldKey.currentContext,
+        dialogType: DialogType.INFO,
+        animType: AnimType.BOTTOMSLIDE,
+        tittle: 'Enviar carga',
+        desc: ' ',
+        btnOkOnPress: () => _sendCharge(charge),
+        btnOkText: 'Enviar',
+        btnCancelOnPress: (){}
+    ).show();
+  }
+
+  _showChargeDeliveredAlert(){
+    return AwesomeDialog(
+        context: globalsKeys.scaffoldKey.currentContext,
+        dialogType: DialogType.SUCCES,
+        animType: AnimType.BOTTOMSLIDE,
+        tittle: 'Exito',
+        desc: 'Carga enviada con exito',
+        btnOkOnPress: (){}
+    ).show();
+  }
+
+  _showDriverProfile(BuildContext context, String driverName) {
+    Navigator.pushNamed(context, '/profile_page', arguments: driverName);
   }
 
   _chooseDriver() {

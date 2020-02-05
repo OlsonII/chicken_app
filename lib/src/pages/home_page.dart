@@ -1,6 +1,7 @@
 import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
 import 'package:chicken_app/src/pages/charges_page.dart';
 import 'package:chicken_app/src/pages/drivers_page.dart';
+import 'package:chicken_app/src/utils/globals_keys.dart';
 import 'package:chicken_app/src/utils/register_charge_form.dart';
 import 'package:chicken_app/src/utils/register_driver_form.dart';
 import 'package:chicken_app/src/utils/register_due_form.dart';
@@ -47,6 +48,7 @@ class _HomePageState extends State<HomePage> {
 
     return SafeArea(
       child: Scaffold(
+        key: globalsKeys.scaffoldKey,
         body: Stack(
           children: <Widget>[
             _buildPrincipalInformation(),
@@ -75,9 +77,9 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildPrincipalContainer() {
     return AnimatedPositioned(
-      top: showContainer ? _screenHeight*0.27 : _screenHeight*0.85,
+      top: showContainer ? _screenHeight*0.17 : _screenHeight*0.85,
       bottom: -100,
-      duration: Duration(milliseconds: 500),
+      duration: Duration(milliseconds: 400),
       curve: Curves.fastOutSlowIn,
       child: Container(
         height: _screenHeight,
@@ -114,14 +116,6 @@ class _HomePageState extends State<HomePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(top: 40, left: 30),
-            child: Text('Cantidad de pollos recibidos:', style: TextStyle(color: Colors.black, fontSize: 20),),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 10, left: 30),
-            child: Text('0', style: TextStyle(color: Colors.black, fontSize: 40),),
-          ),
           Padding(
             padding: const EdgeInsets.only(top: 10, left: 30),
             child: Text('Cantidad de pollos enviados:', style: TextStyle(color: Colors.black, fontSize: 20),),

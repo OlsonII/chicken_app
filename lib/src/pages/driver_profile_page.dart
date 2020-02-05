@@ -1,127 +1,145 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:chicken_app/src/bloc/driver_bloc.dart';
+import 'package:chicken_app/src/bloc/driver_event.dart';
+import 'package:chicken_app/src/bloc/driver_state.dart';
 import 'package:chicken_app/src/models/charge_model.dart';
 import 'package:chicken_app/src/models/driver_model.dart';
 import 'package:chicken_app/src/providers/charge_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class DriverProfilePage extends StatelessWidget {
   
   final chargeProvider = new ChargeProvider();
+  DriverBloc _driverBloc;
+
+
 
   @override
   Widget build(BuildContext context) {
 
-    final DriverModel driverModel = ModalRoute.of(context).settings.arguments;
+    final driverName = ModalRoute.of(context).settings.arguments;
 
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color.fromRGBO(254, 206, 46,  1),
-        leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios, color: Colors.black87,),
-            onPressed: () => Navigator.pop(context)
-        ),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.edit, color: Colors.black87)
-          )
-        ],
-      ),
-      body: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          //mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            SizedBox(height: 50.0),
-            Center(child: Text(driverModel.name, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),)),
-            Row(
-              children: <Widget>[
-                Expanded(child: Container()),
-                Text(driverModel.licencePlate, style: TextStyle(fontSize: 17)),
-                Text(' | ', style: TextStyle(color: Colors.red),),
-                Text(driverModel.state, style: TextStyle(fontSize: 17, color: driverModel.state == 'Activo' ? Colors.green : Colors.red)),
-                Expanded(child: Container())
-              ],
-            ),
-            SizedBox(height: 40.0),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 10.0),
-              child: Row(
-                children: <Widget>[
-                  Text('INFORMACION'),
-                  Expanded(child: Container(),),
-                ],
-              ),
-            ),
-            SizedBox(height: 5.0),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 10.0),
-              child: Row(
-                children: <Widget>[
-                  Text('CEDULA: '),
-                  Text(driverModel.identification),
-                  Expanded(child: Container(),),
-                ],
-              ),
-            ),
-            SizedBox(height: 2.0),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 10.0),
-              child: Row(
-                children: <Widget>[
-                  Text('TELEFONO: '),
-                  Text(driverModel.phone),
-                  Expanded(child: Container(),),
-                ],
-              ),
-            ),
-            SizedBox(height: 40.0),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 10.0),
-              child: Row(
-                children: <Widget>[
-                  Text('ESTADISTICAS DE ENCARGOS'),
-                  Expanded(child: Container(),)
-                ],
-              ),
-            ),
-            SizedBox(height: 40.0),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 10.0),
-              child: Row(
-                children: <Widget>[
-                  Text('ENCARGOS EN PROGRESO'),
-                  Expanded(child: Container(),),
-                  Text('VER TODO')
-                ],
-              ),
-            ),
-            SizedBox(height: 10.0),
-            Expanded(
-              child: Container(
-                child: FutureBuilder(
-                  future: chargeProvider.getChargesByDriver(driverModel.name),
-                  builder: (BuildContext context, AsyncSnapshot snapshot){
-                    if(snapshot.data == null) return Text('Este conductor no tiene encargos');
-                    if(snapshot.hasData){
-                      final charges = snapshot.data;
-                      return ListView.builder(
-                          itemCount: charges.length,
-                          itemBuilder: (context, i) => _createItem(context, charges[i])
-                      );
-                      return Container();
-                    }else{
-                      return Center(child: CircularProgressIndicator());
-                    }
-                  },
+    _driverBloc = BlocProvider.of<DriverBloc>(context);
+    _driverBloc.add(GetSpecifyDriver(driver: new DriverModel(identification: driverName)));
+
+    return BlocBuilder<DriverBloc, DriverState>(
+        builder: (BuildContext context, DriverState state) {
+          if(state is DriverLoaded) {
+            final driverModel = state.driver;
+            return Scaffold(
+              appBar: AppBar(
+                backgroundColor: Color.fromRGBO(254, 206, 46,  1),
+                leading: IconButton(
+                    icon: Icon(Icons.arrow_back_ios, color: Colors.black87,),
+                    onPressed: () => Navigator.pop(context)
                 ),
+                actions: <Widget>[
+                  IconButton(
+                      icon: Icon(Icons.edit, color: Colors.black87)
+                  )
+                ],
               ),
-            )
-          ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: (){},
-      ),
+              body: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                //mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  SizedBox(height: 50.0),
+                  Center(child: Text(driverModel.name, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),)),
+                  Row(
+                    children: <Widget>[
+                      Expanded(child: Container()),
+                      Text(driverModel.licencePlate, style: TextStyle(fontSize: 17)),
+                      Text(' | ', style: TextStyle(color: Colors.red),),
+                      Text(driverModel.state, style: TextStyle(fontSize: 17, color: driverModel.state == 'Activo' ? Colors.green : Colors.red)),
+                      Expanded(child: Container())
+                    ],
+                  ),
+                  SizedBox(height: 40.0),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Row(
+                      children: <Widget>[
+                        Text('INFORMACION'),
+                        Expanded(child: Container(),),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 5.0),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Row(
+                      children: <Widget>[
+                        Text('CEDULA: '),
+                        Text(driverModel.identification),
+                        Expanded(child: Container(),),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 2.0),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Row(
+                      children: <Widget>[
+                        Text('TELEFONO: '),
+                        Text(driverModel.phone),
+                        Expanded(child: Container(),),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 40.0),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Row(
+                      children: <Widget>[
+                        Text('ESTADISTICAS DE ENCARGOS'),
+                        Expanded(child: Container(),)
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 40.0),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Row(
+                      children: <Widget>[
+                        Text('ENCARGOS EN PROGRESO'),
+                        Expanded(child: Container(),),
+                        Text('VER TODO')
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 10.0),
+                  Expanded(
+                    child: Container(
+                      child: FutureBuilder(
+                        future: chargeProvider.getChargesByDriver(driverModel.name),
+                        builder: (BuildContext context, AsyncSnapshot snapshot){
+                          if(snapshot.data == null) return Text('Este conductor no tiene encargos');
+                          if(snapshot.hasData){
+                            final charges = snapshot.data;
+                            return ListView.builder(
+                                itemCount: charges.length,
+                                itemBuilder: (context, i) => _createItem(context, charges[i])
+                            );
+                            return Container();
+                          }else{
+                            return Center(child: CircularProgressIndicator());
+                          }
+                        },
+                      ),
+                    ),
+                  )
+                ],
+              ),
+              floatingActionButton: FloatingActionButton(
+                child: Icon(Icons.add),
+                onPressed: (){},
+              ),
+            );
+          }
+          return Container();
+        },
     );
   }
 

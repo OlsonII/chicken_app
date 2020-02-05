@@ -30,8 +30,7 @@ class DriverForm extends StatelessWidget {
 
   Positioned _buildPrincipalContainer(BuildContext context, double _screenHeight, double _screenWidth) {
     return Positioned(
-      top: _screenHeight*0.25,
-      //bottom: _screenHeight*0.15,
+      top: _screenHeight*0.18,
       right: 0,
       left: 0,
       bottom: 10,
