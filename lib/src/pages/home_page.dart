@@ -1,4 +1,5 @@
 import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
+import 'package:chicken_app/src/bloc/driver_bloc.dart';
 import 'package:chicken_app/src/pages/charges_page.dart';
 import 'package:chicken_app/src/pages/drivers_page.dart';
 import 'package:chicken_app/src/utils/globals_keys.dart';
@@ -21,6 +22,7 @@ class _HomePageState extends State<HomePage> {
   double _screenWidth = 0.0;
   double _screenHeight = 0.0;
 
+
   List<Widget> _pages = [
     ChargesPage(),
     DriversPage(),
@@ -32,6 +34,13 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     showContainer = true;
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    driverBloc.dispose();
   }
 
   @override
@@ -49,6 +58,13 @@ class _HomePageState extends State<HomePage> {
     return SafeArea(
       child: Scaffold(
         key: globalsKeys.scaffoldKey,
+        appBar: AppBar(
+          backgroundColor: Color.fromRGBO(254, 206, 46,  1),
+          elevation: 0,
+          leading: IconButton(
+            icon: Icon(Icons.menu, color: Colors.black87,),
+          ),
+        ),
         body: Stack(
           children: <Widget>[
             _buildPrincipalInformation(),

@@ -102,8 +102,13 @@ class ChargeProvider {
   }
 
   Future<bool> editChargeState(ChargeModel chargeModel) async {
-    print(chargeModelToJson(chargeModel));
     return await http.put(_URL+'/${chargeModel.id}', headers: {'content-type': 'application/json'}, body: chargeModelToJson(chargeModel))
+        .then((response) => true)
+        .catchError((onError) => onError);
+  }
+
+  Future<bool> addDriverToCharge(ChargeModel chargeModel) async {
+    return await http.put(_URL+'/${chargeModel.id}/driver', headers: {'content-type': 'application/json'}, body: chargeModelToJson(chargeModel))
         .then((response) => true)
         .catchError((onError) => onError);
   }

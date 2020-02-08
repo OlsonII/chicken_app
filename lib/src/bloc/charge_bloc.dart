@@ -1,60 +1,45 @@
+import 'dart:async';
+
 import 'package:chicken_app/src/bloc/charge_event.dart';
 import 'package:chicken_app/src/bloc/charge_state.dart';
 import 'package:chicken_app/src/providers/charge_provider.dart';
-import 'package:bloc/bloc.dart';
 
-/*class ChargeBloc {
-
-  final _chargeRProvider = ChargeProvider();
-  final _chargeController = PublishSubject<List<ChargeModel>>();
-
-  Stream<List<ChargeModel>> get allCharges => _chargeController.stream;
-
-
-  getAllCharges() async {
-    final charges = await _chargeRProvider.getCharges();
-    _chargeController.sink.add(charges);
-  }
-
-  dispose(){
-    _chargeController.close();
-  }
-
-}
-
-final chargeBloc = ChargeBloc();*/
-
-class ChargeBloc extends Bloc<ChargeEvent, ChargeState> {
-
-  ChargeBloc();
+class ChargeBloc{
 
   final _chargeProvider = ChargeProvider();
 
-  @override
-  ChargeState get initialState => ChargesEmpty();
+  StreamController<ChargeEvent> _chargeInput = StreamController();
+  StreamController<ChargeState> _chargeOutput = StreamController.broadcast();
 
-  @override
-  Stream<ChargeState> mapEventToState(ChargeEvent event) async* {
+  Stream<ChargeState> get chargeStream => _chargeOutput.stream;
+  StreamSink<ChargeEvent> get sendChargeEvent => _chargeInput.sink;
+
+  ChargeBloc(){
+    _chargeInput.stream.listen(_onEvent);
+  }
+
+  void dispose() {
+    _chargeInput.close();
+    _chargeOutput.close();
+  }
+
+  void _onEvent(ChargeEvent event) async {
 
     if(event is AddCharge){
-
-      yield ChargesLoading();
+      _chargeOutput.add(ChargesLoading());
       await _chargeProvider.addCharge(event.charge);
-      yield ChargesLoaded(charges: await _chargeProvider.getCharges());
-
     }else if(event is GetCharges){
-
-      yield ChargesLoading();
-      yield ChargesLoaded(charges: await _chargeProvider.getCharges());
-
+      _chargeOutput.add(ChargesLoading());
     }else if(event is EditChargeState) {
-
-      yield ChargesLoading();
+      _chargeOutput.add(ChargesLoading());
       await _chargeProvider.editChargeState(event.charge);
-      yield ChargesLoaded(charges: await _chargeProvider.getCharges());
-
+    }else if(event is AddDriverToCharge){
+      _chargeOutput.add(ChargesLoading());
+      await _chargeProvider.addDriverToCharge(event.charge);
     }
-
+    _chargeOutput.add(ChargesLoaded(charges: await _chargeProvider.getCharges()));
   }
 
 }
+
+final chargeBloc = ChargeBloc();

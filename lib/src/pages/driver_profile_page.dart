@@ -7,12 +7,10 @@ import 'package:chicken_app/src/models/driver_model.dart';
 import 'package:chicken_app/src/providers/charge_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class DriverProfilePage extends StatelessWidget {
   
   final chargeProvider = new ChargeProvider();
-  DriverBloc _driverBloc;
 
 
 
@@ -21,13 +19,13 @@ class DriverProfilePage extends StatelessWidget {
 
     final driverName = ModalRoute.of(context).settings.arguments;
 
-    _driverBloc = BlocProvider.of<DriverBloc>(context);
-    _driverBloc.add(GetSpecifyDriver(driver: new DriverModel(identification: driverName)));
+    driverBloc.sendDriverEvent.add(GetSpecifyDriver(driver: new DriverModel(identification: driverName)));
 
-    return BlocBuilder<DriverBloc, DriverState>(
-        builder: (BuildContext context, DriverState state) {
-          if(state is DriverLoaded) {
-            final driverModel = state.driver;
+    return StreamBuilder(
+      stream: driverBloc.driverStream,
+        builder: (context, state) {
+          if(state.data is DriverLoaded) {
+            final driverModel = state.data.driver;
             return Scaffold(
               appBar: AppBar(
                 backgroundColor: Color.fromRGBO(254, 206, 46,  1),

@@ -36,3 +36,27 @@ class GetSpecifyDriver extends DriverEvent {
   List<Object> get props => [driver];
 
 }
+
+class EditDriver extends DriverEvent {
+
+  final DriverModel driver;
+
+  const EditDriver({@required this.driver}) : assert(driver != null);
+
+  @override
+  List<Object> get props => [driver];
+
+}
+
+class GetDriverByState extends DriverEvent {
+
+  final DriverModel driver;
+
+  const GetDriverByState({@required this.driver}) : assert(driver != null);
+
+  @override
+  List<Object> get props => [driver];
+
+}
+
+

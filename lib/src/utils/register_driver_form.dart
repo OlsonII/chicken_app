@@ -4,14 +4,13 @@ import 'package:chicken_app/src/bloc/driver_event.dart';
 import 'package:chicken_app/src/models/driver_model.dart';
 import 'package:chicken_app/src/providers/driver_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 
 class DriverForm extends StatelessWidget {
 
   static GlobalKey<FormState> formDriverKey = new GlobalKey<FormState>();
 
-  DriverBloc _driverBlocII;
+  DriverBloc _driverBloc = DriverBloc();
 
   final driverModel = new DriverModel();
   final driverProvider = new DriverProvider();
@@ -19,7 +18,7 @@ class DriverForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    _driverBlocII = BlocProvider.of<DriverBloc>(context);
+    //_driverBloc = BlocProvider.of<DriverBloc>(context);
 
     final _deviceData = MediaQuery.of(context);
     final _screenHeight = _deviceData.size.height;
@@ -179,7 +178,7 @@ class DriverForm extends StatelessWidget {
   _submitForm(BuildContext context){
     driverModel.state = 'Inactivo';
     //driverProvider.addDriver(driverModel);
-    _driverBlocII.add(AddDriver(driver: driverModel));
+    _driverBloc.sendDriverEvent.add(AddDriver(driver: driverModel));
     formDriverKey.currentState.reset();
   }
 

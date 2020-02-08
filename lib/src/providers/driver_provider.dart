@@ -28,7 +28,7 @@ class DriverProvider{
 
   Future<List<DriverModel>> getDriversByState(String state) async {
     try{
-      final response = await http.get(_URL+'/$state}');
+      final response = await http.get(_URL+'/state/$state');
       final decodedData = jsonDecode(response.body);
       final List<DriverModel> drivers = new List();
 
@@ -39,6 +39,7 @@ class DriverProvider{
         drivers.add(driverTemp);
       });
 
+      print(drivers);
       return drivers;
     }catch(e){
       print(e);

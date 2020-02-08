@@ -1,40 +1,50 @@
 import 'package:chicken_app/src/bloc/driver_event.dart';
 import 'package:chicken_app/src/bloc/driver_state.dart';
 import 'package:chicken_app/src/providers/driver_provider.dart';
-import 'package:bloc/bloc.dart';
+import 'dart:async';
 
-class DriverBloc extends Bloc<DriverEvent, DriverState> {
-
-  DriverBloc();
+class DriverBloc{
 
   final _driverProvider = DriverProvider();
 
-  @override
-  DriverState get initialState => DriversEmpty();
+  StreamController<DriverEvent> _driverInput = StreamController();
+  StreamController<DriverState> _driverOutput = StreamController.broadcast();
 
-  @override
-  Stream<DriverState> mapEventToState(DriverEvent event) async* {
+  Stream<DriverState> get driverStream => _driverOutput.stream;
+  StreamSink<DriverEvent> get sendDriverEvent => _driverInput.sink;
 
+  DriverBloc(){
+    _driverInput.stream.listen(_onEvent);
+  }
+
+  void dispose() {
+    _driverInput.close();
+    _driverOutput.close();
+  }
+
+  void _onEvent(DriverEvent event) async{
     if(event is AddDriver){
-
-      yield DriversLoading();
+      _driverOutput.add(DriversLoading());
       await _driverProvider.addDriver(event.driver);
-      yield DriversLoaded(drivers: await _driverProvider.getDrivers());
-
+      _driverOutput.add(DriversLoaded(drivers: await _driverProvider.getDrivers()));
     }else if(event is GetDrivers){
-
-      yield DriversLoading();
+      _driverOutput.add(DriversLoading());
       final drivers = await _driverProvider.getDrivers();
-      yield DriversLoaded(drivers: drivers);
-
+      _driverOutput.add(DriversLoaded(drivers: drivers));
     }else if(event is GetSpecifyDriver){
-      yield DriversLoading();
+      _driverOutput.add(DriversLoading());
       final driver = await _driverProvider.getSpecifyDriver(event.driver.identification);
-      yield DriverLoaded(driver: driver);
+      _driverOutput.add(DriverLoaded(driver: driver));
+    }else if(event is EditDriver){
+      _driverOutput.add(DriversLoading());
+      await _driverProvider.editDriver(event.driver);
+      _driverOutput.add(DriversLoaded(drivers: await _driverProvider.getDrivers()));
+    }else if(event is GetDriverByState){
+      _driverOutput.add(DriversLoading());
+      _driverOutput.add(DriversLoaded(drivers: await _driverProvider.getDriversByState(event.driver.state)));
     }
-
-
-
   }
 
 }
+
+final driverBloc = DriverBloc();

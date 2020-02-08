@@ -45,3 +45,14 @@ class EditChargeState extends ChargeEvent {
   List<Object> get props => [charge];
 
 }
+
+class AddDriverToCharge extends ChargeEvent {
+
+  final ChargeModel charge;
+
+  const AddDriverToCharge({@required this.charge}) : assert(charge != null);
+
+  @override
+  List<Object> get props => [charge];
+
+}

@@ -3,31 +3,39 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:chicken_app/src/bloc/charge_bloc.dart';
 import 'package:chicken_app/src/bloc/charge_event.dart';
 import 'package:chicken_app/src/bloc/charge_state.dart';
+import 'package:chicken_app/src/bloc/driver_bloc.dart';
+import 'package:chicken_app/src/bloc/driver_event.dart';
+import 'package:chicken_app/src/bloc/driver_state.dart';
 import 'package:chicken_app/src/models/charge_model.dart';
+import 'package:chicken_app/src/models/driver_model.dart';
 import 'package:chicken_app/src/providers/charge_provider.dart';
+import 'package:chicken_app/src/utils/choose_driver_dialog.dart';
 import 'package:chicken_app/src/utils/globals_keys.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
-class ChargesPage extends StatelessWidget {
+class ChargesPage extends StatefulWidget {
 
-  final chargesProvider = new ChargeProvider();
-  ChargeBloc _chargeBloc;
+  @override
+  _ChargesPageState createState() => _ChargesPageState();
+}
+
+class _ChargesPageState extends State<ChargesPage> {
 
   @override
   Widget build(BuildContext context) {
 
-    _chargeBloc = BlocProvider.of<ChargeBloc>(context);
-    _chargeBloc.add(GetCharges());
+    chargeBloc.sendChargeEvent.add(GetCharges());
 
-
-    return BlocBuilder<ChargeBloc, ChargeState>(
-      builder: (context, state){
-        if(state is ChargesLoaded){
+    return StreamBuilder(
+      key: globalsKeys.driversDropDownKey,
+      stream: chargeBloc.chargeStream,
+      initialData: ChargesEmpty(),
+      builder: (context, snapshot){
+        if(snapshot.data is ChargesLoaded){
           return ListView.builder(
-              itemCount: state.charges.length,
-              itemBuilder: (context, i) => _createItem(context, state.charges[i])
+              itemCount: snapshot.data.charges.length,
+              itemBuilder: (context, i) => _createItem(context, snapshot.data.charges[i])
           );
         }else{
           return Center(child: CircularProgressIndicator());
@@ -54,7 +62,7 @@ class ChargesPage extends StatelessWidget {
           caption: 'Conductor',
           icon: Icons.perm_identity,
           color: Colors.red,
-          onTap: () => charge.driver.length > 2 ? _showDriverProfile(context, charge.driver) : _chooseDriver(),
+          onTap: () => charge.driver.length > 2 ? _showDriverProfile(context, charge.driver) : _chooseDriverAlert(charge),
         )
       ],
       secondaryActions: <Widget>[
@@ -93,7 +101,7 @@ class ChargesPage extends StatelessWidget {
   _sendCharge(ChargeModel charge){
     if(charge.driver.isNotEmpty) {
       charge.state = 'Enviado';
-      _chargeBloc.add(EditChargeState(charge: charge));
+      chargeBloc.sendChargeEvent.add(EditChargeState(charge: charge));
       _showChargeDeliveredAlert();
     }else{
       _showNoDriverAlert();
@@ -102,7 +110,7 @@ class ChargesPage extends StatelessWidget {
 
   _deliverCharge(ChargeModel charge){
     charge.state = 'Entregado';
-    _chargeBloc.add(EditChargeState(charge: charge));
+    chargeBloc.sendChargeEvent.add(EditChargeState(charge: charge));
   }
 
   _chooseAvatar(String state){
@@ -183,11 +191,34 @@ class ChargesPage extends StatelessWidget {
     ).show();
   }
 
+  _chooseDriverAlert(ChargeModel chargeModel){
+    return showDialog(
+        context: globalsKeys.driversDropDownKey.currentContext,
+        builder:(context) {
+          return ChooseDriverDialog(chargeModel);
+        }
+    );
+
+    /*return AwesomeDialog(
+        dialogType: DialogType.INFO,
+        animType: AnimType.BOTTOMSLIDE,
+        body: Container(
+          child: Column(
+            children: <Widget>[
+              Text('Asignar conductor'),
+              _buildDropDownMenu()
+            ],
+          ),
+        ),
+        btnOkOnPress: (){}, context: context
+        ).show();*/
+  }
+
   _showDriverProfile(BuildContext context, String driverName) {
     Navigator.pushNamed(context, '/profile_page', arguments: driverName);
   }
 
-  _chooseDriver() {
-    print('without driver');
-  }
+
+
+
 }

@@ -1,4 +1,6 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:chicken_app/src/bloc/charge_bloc.dart';
+import 'package:chicken_app/src/bloc/charge_event.dart';
 import 'package:chicken_app/src/models/charge_model.dart';
 import 'package:chicken_app/src/pages/home_page.dart';
 import 'package:chicken_app/src/providers/charge_provider.dart';
@@ -147,7 +149,7 @@ class ChargeForm extends StatelessWidget {
     print('registro completado');
     chargeModel.state = 'Generado';
     chargeModel.date = DateFormat('dd/MM/yyyy').format(DateTime.now()).toString();
-    chargeProvider.addCharge(chargeModel);
+    chargeBloc.sendChargeEvent.add(AddCharge(charge: chargeModel));
     formChargeKey.currentState.reset();
   }
 }
