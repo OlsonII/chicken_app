@@ -4,7 +4,11 @@ import 'package:meta/meta.dart';
 @immutable
 abstract class ChargeState {}
 
-class ChargesEmpty extends ChargeState {}
+class ChargesEmpty extends ChargeState {
+  final List<ChargeModel> charges = [];
+
+  List<Object> get props => [charges];
+}
 
 class ChargesLoading extends ChargeState {
 

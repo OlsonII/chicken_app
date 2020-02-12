@@ -47,7 +47,7 @@ class DriversPage extends StatelessWidget {
             subtitle: Text('${driver.phone}', style: TextStyle(fontSize: 15)),
             trailing: Icon(Icons.directions_car, color: driver.state == 'Activo' ? Colors.green : Colors.red),
           ),
-          onTap: () => Navigator.pushNamed(context, '/profile_page', arguments: driver.name),
+          onTap: () => Navigator.pushNamed(context, '/profile_page', arguments: {'driverId': driver.identification, 'name': false}),
         ),
       ),
       actions: <Widget>[
@@ -72,6 +72,15 @@ class DriversPage extends StatelessWidget {
             onTap: () {
               driver.state = 'Inactivo';
               driverBloc.sendDriverEvent.add(EditDriver(driver: driver));
+            }
+        ),
+        IconSlideAction(
+            caption: 'Despedir',
+            icon: Icons.exit_to_app,
+            color: Colors.red,
+            onTap: () {
+              /*driver.state = 'Inactivo';
+              driverBloc.sendDriverEvent.add(EditDriver(driver: driver));*/
             }
         ),
       ],

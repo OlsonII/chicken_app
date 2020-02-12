@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'charge_model.dart';
 
 DriverModel driverModelFromJson(String str) => DriverModel.fromJson(json.decode(str));
 
@@ -21,7 +20,7 @@ class DriverModel {
     this.state,
   });
 
-  factory DriverModel.fromJson(Map<String, dynamic> json) => DriverModel(
+  factory DriverModel.fromJson(Map<dynamic, dynamic> json) => DriverModel(
     identification: json["identification"],
     name: json["name"],
     licencePlate: json["licence_plate"],

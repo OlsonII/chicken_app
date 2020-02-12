@@ -23,14 +23,5 @@ class DriversLoaded extends DriverState {
   List<Object> get props => [drivers];
 }
 
-class DriverLoaded extends DriverState {
-
-  final DriverModel driver;
-
-  DriverLoaded({@required this.driver}) : assert(driver != null);
-
-  Object get props => driver;
-}
-
 class DriversError extends DriverState {}
 

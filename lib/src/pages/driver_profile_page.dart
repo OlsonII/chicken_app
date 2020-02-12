@@ -1,4 +1,7 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:chicken_app/src/bloc/charge_bloc.dart';
+import 'package:chicken_app/src/bloc/charge_event.dart';
+import 'package:chicken_app/src/bloc/charge_state.dart';
 import 'package:chicken_app/src/bloc/driver_bloc.dart';
 import 'package:chicken_app/src/bloc/driver_event.dart';
 import 'package:chicken_app/src/bloc/driver_state.dart';
@@ -11,21 +14,42 @@ import 'package:flutter/material.dart';
 class DriverProfilePage extends StatelessWidget {
   
   final chargeProvider = new ChargeProvider();
+  String driverName;
+  String driverId;
+  DriverModel driverModel;
 
+  //TODO: Optimizar busqueda de conductor especifico para este page
 
 
   @override
   Widget build(BuildContext context) {
 
-    final driverName = ModalRoute.of(context).settings.arguments;
+    driverBloc.sendDriverEvent.add(GetDrivers());
 
-    driverBloc.sendDriverEvent.add(GetSpecifyDriver(driver: new DriverModel(identification: driverName)));
+
+    final Map driverArguments = ModalRoute.of(context).settings.arguments as Map;
+
+    if(driverArguments['name'] == true){
+      driverName = driverArguments['driverId'];
+    }else{
+      driverId = driverArguments['driverId'];
+    }
+    //TODO: Optimizar estos metodos
 
     return StreamBuilder(
       stream: driverBloc.driverStream,
         builder: (context, state) {
-          if(state.data is DriverLoaded) {
-            final driverModel = state.data.driver;
+          if(state.data is DriversLoaded) {
+
+            state.data.drivers.forEach((driver){
+              if(driver.identification == driverId || driver.name == driverName){
+                driverModel = driver;
+              }
+            });
+
+            chargeBloc.sendChargeEvent.add(GetChargesByDriver(driverName: driverModel.name));
+
+
             return Scaffold(
               appBar: AppBar(
                 backgroundColor: Color.fromRGBO(254, 206, 46,  1),
@@ -110,17 +134,17 @@ class DriverProfilePage extends StatelessWidget {
                   SizedBox(height: 10.0),
                   Expanded(
                     child: Container(
-                      child: FutureBuilder(
-                        future: chargeProvider.getChargesByDriver(driverModel.name),
+                      child: StreamBuilder(
+                        stream: chargeBloc.chargeStream,
+                        initialData: ChargesEmpty(),
                         builder: (BuildContext context, AsyncSnapshot snapshot){
                           if(snapshot.data == null) return Text('Este conductor no tiene encargos');
                           if(snapshot.hasData){
-                            final charges = snapshot.data;
+                            final chargesState = snapshot.data;
                             return ListView.builder(
-                                itemCount: charges.length,
-                                itemBuilder: (context, i) => _createItem(context, charges[i])
+                                itemCount: chargesState.charges.length,
+                                itemBuilder: (context, i) => _createItem(context, chargesState.charges[i])
                             );
-                            return Container();
                           }else{
                             return Center(child: CircularProgressIndicator());
                           }

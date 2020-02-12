@@ -20,8 +20,8 @@ class App extends StatelessWidget {
       //home: SplashScreen(),
       initialRoute: '/home',
       routes: {
-        '/home' : (BuildContext context) => HomePage(),
-        '/splash' : (BuildContext context) => SplashScreen(),
+        '/splash'       : (BuildContext context) => SplashScreen(),
+        '/home'         : (BuildContext context) => HomePage(),
         '/profile_page' : (BuildContext context) => DriverProfilePage()
       },
     );

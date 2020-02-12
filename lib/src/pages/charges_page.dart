@@ -13,6 +13,7 @@ import 'package:chicken_app/src/utils/choose_driver_dialog.dart';
 import 'package:chicken_app/src/utils/globals_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:intl/intl.dart';
 
 class ChargesPage extends StatefulWidget {
 
@@ -21,10 +22,13 @@ class ChargesPage extends StatefulWidget {
 }
 
 class _ChargesPageState extends State<ChargesPage> {
+  
+  final todayDate = DateFormat('dd/MM/yyyy').format(DateTime.now()).toString();
 
   @override
   Widget build(BuildContext context) {
 
+    //chargeBloc.sendChargeEvent.add(GetChargesByDate(date: todayDate));
     chargeBloc.sendChargeEvent.add(GetCharges());
 
     return StreamBuilder(
@@ -62,7 +66,7 @@ class _ChargesPageState extends State<ChargesPage> {
           caption: 'Conductor',
           icon: Icons.perm_identity,
           color: Colors.red,
-          onTap: () => charge.driver.length > 2 ? _showDriverProfile(context, charge.driver) : _chooseDriverAlert(charge),
+          onTap: () => charge.driver != null ? _showDriverProfile(context, charge.driver) : _chooseDriverAlert(charge),
         )
       ],
       secondaryActions: <Widget>[
@@ -99,7 +103,7 @@ class _ChargesPageState extends State<ChargesPage> {
   }
 
   _sendCharge(ChargeModel charge){
-    if(charge.driver.isNotEmpty) {
+    if(charge.driver != null) {
       charge.state = 'Enviado';
       chargeBloc.sendChargeEvent.add(EditChargeState(charge: charge));
       _showChargeDeliveredAlert();
@@ -215,7 +219,7 @@ class _ChargesPageState extends State<ChargesPage> {
   }
 
   _showDriverProfile(BuildContext context, String driverName) {
-    Navigator.pushNamed(context, '/profile_page', arguments: driverName);
+    Navigator.pushNamed(context, '/profile_page', arguments: {'driverId': driverName, 'name': true});
   }
 
 

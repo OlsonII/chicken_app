@@ -8,8 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:intl/intl.dart';
 
-//TODO: IMPLEMENT DIALOGS: https://flutterawesome.com/a-new-flutter-package-project-for-simple-and-awesome-dialogs/
-
 class ChargeForm extends StatelessWidget {
 
   static GlobalKey<FormState> formChargeKey = new GlobalKey<FormState>();

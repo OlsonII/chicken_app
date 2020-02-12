@@ -1,5 +1,8 @@
 import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
+import 'package:chicken_app/src/bloc/charge_bloc.dart';
+import 'package:chicken_app/src/bloc/charge_event.dart';
 import 'package:chicken_app/src/bloc/driver_bloc.dart';
+import 'package:chicken_app/src/bloc/driver_event.dart';
 import 'package:chicken_app/src/pages/charges_page.dart';
 import 'package:chicken_app/src/pages/drivers_page.dart';
 import 'package:chicken_app/src/utils/globals_keys.dart';
@@ -30,6 +33,8 @@ class _HomePageState extends State<HomePage> {
     Container()
   ];
 
+
+
   @override
   void initState() {
     showContainer = true;
@@ -40,6 +45,7 @@ class _HomePageState extends State<HomePage> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
+    chargeBloc.dispose();
     driverBloc.dispose();
   }
 

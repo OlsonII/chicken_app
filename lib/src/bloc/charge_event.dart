@@ -19,9 +19,9 @@ class AddCharge extends ChargeEvent {
 
 class GetCharges extends ChargeEvent {
 
-  final List<ChargeModel> drivers = new List();
+  final List<ChargeModel> charges = new List();
 
-  List<Object> get props => [drivers];
+  List<Object> get props => [charges];
 }
 
 class GetChargesByDate extends ChargeEvent {
@@ -31,7 +31,18 @@ class GetChargesByDate extends ChargeEvent {
   const GetChargesByDate({@required this.date}) : assert(date != null);
 
   @override
-  List<Object> get props => [new ChargeProvider().getChargesByDate(this.date)];
+  List<Object> get props => [date];
+
+}
+
+class GetChargesByDriver extends ChargeEvent {
+
+  final String driverName;
+
+  const GetChargesByDriver({@required this.driverName}) : assert(driverName != null);
+
+  @override
+  List<Object> get props => [driverName];
 
 }
 

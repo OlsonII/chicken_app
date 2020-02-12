@@ -24,7 +24,7 @@ class ChargeModel {
     this.state,
   });
 
-  factory ChargeModel.fromJson(Map<String, dynamic> json) => ChargeModel(
+  factory ChargeModel.fromJson(Map<dynamic, dynamic> json) => ChargeModel(
     id: json["_id"],
     date: json["date"],
     destination: json["destination"],
