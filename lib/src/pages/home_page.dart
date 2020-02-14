@@ -1,8 +1,10 @@
 import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
 import 'package:chicken_app/src/bloc/charge_bloc.dart';
 import 'package:chicken_app/src/bloc/charge_event.dart';
+import 'package:chicken_app/src/bloc/charge_state.dart';
 import 'package:chicken_app/src/bloc/driver_bloc.dart';
 import 'package:chicken_app/src/bloc/driver_event.dart';
+import 'package:chicken_app/src/models/charge_model.dart';
 import 'package:chicken_app/src/pages/charges_page.dart';
 import 'package:chicken_app/src/pages/drivers_page.dart';
 import 'package:chicken_app/src/utils/globals_keys.dart';
@@ -12,6 +14,7 @@ import 'package:chicken_app/src/utils/register_due_form.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:intl/intl.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -24,6 +27,10 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
   double _screenWidth = 0.0;
   double _screenHeight = 0.0;
+  int chickensSends = 0;
+
+  final todayDate = DateFormat('dd/MM/yyyy').format(DateTime.now()).toString();
+  final yesterdayDate = DateFormat('dd/MM/yyyy').format(DateTime.now().add(Duration(days: -1))).toString();
 
 
   List<Widget> _pages = [
@@ -43,7 +50,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     chargeBloc.dispose();
     driverBloc.dispose();
@@ -55,6 +61,7 @@ class _HomePageState extends State<HomePage> {
     final _screenSize = MediaQuery.of(context).size;
     _screenWidth = _screenSize.width;
     _screenHeight = _screenSize.height;
+    chickensSends = 0;
 
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -130,24 +137,42 @@ class _HomePageState extends State<HomePage> {
     return Container();
   }
 
-  Container _buildPrincipalInformation() {
-    return Container(
-      width: double.infinity,
-      height: double.infinity,
-      color: Color.fromRGBO(254, 206, 46,  1),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(top: 10, left: 30),
-            child: Text('Cantidad de pollos enviados:', style: TextStyle(color: Colors.black, fontSize: 20),),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 10, left: 30),
-            child: Text('0', style: TextStyle(color: Colors.black, fontSize: 40),),
-          )
-        ],
-      ),
+  _buildPrincipalInformation() {
+
+    return StreamBuilder(
+      stream: chargeBloc.chargeStream,
+      builder: (context, snapshot) {
+        if(snapshot.data is ChargesLoaded){
+          final charges = snapshot.data.charges;
+          if(chickensSends > 0) chickensSends = 0;
+          for(ChargeModel charge in charges){
+            if(charge.state == 'Enviado'){
+              chickensSends += charge.quantity;
+              print(chickensSends);
+            }
+          }
+          return Container(
+            width: double.infinity,
+            height: double.infinity,
+            color: Color.fromRGBO(254, 206, 46,  1),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(top: 10, left: 30),
+                  child: Text('Cantidad de pollos enviados:', style: TextStyle(color: Colors.black, fontSize: 20),),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10, left: 30),
+                  child: Text('$chickensSends', style: TextStyle(color: Colors.black, fontSize: 40),),
+                )
+              ],
+            ),
+          );
+        }else{
+          return Container();
+        }
+      }
     );
   }
 

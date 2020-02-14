@@ -3,6 +3,11 @@ import 'package:firebase_database/firebase_database.dart';
 
 class DriverProviderFirebase {
 
+  DriverProviderFirebase(){
+    FirebaseDatabase.instance.setPersistenceEnabled(true);
+    driversDocument.keepSynced(true);
+  }
+
 
   static final db = FirebaseDatabase.instance.reference();
   static final driversDocument = db.child('drivers');

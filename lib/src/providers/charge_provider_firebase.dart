@@ -4,6 +4,11 @@ import 'package:firebase_database/firebase_database.dart';
 
 class ChargeProviderFirebase {
 
+  ChargeProviderFirebase(){
+    FirebaseDatabase.instance.setPersistenceEnabled(true);
+    chargesDocument.keepSynced(true);
+  }
+
   static final db = FirebaseDatabase.instance.reference();
   static final chargesDocument = db.child('charges');
 
@@ -14,7 +19,7 @@ class ChargeProviderFirebase {
 
   getCharges() async {
     List<ChargeModel> charges = new List();
-    await chargesDocument.once().then((DataSnapshot snapshot) {
+    await chargesDocument.orderByValue().once().then((DataSnapshot snapshot) {
       var chargesIds = snapshot.value.keys;
       var chargesData = snapshot.value;
 
@@ -67,7 +72,6 @@ class ChargeProviderFirebase {
       var chargesData = snapshot.value;
 
       for(var chargeId in chargesIds) {
-        print(chargesData[chargeId]);
         if(chargesData[chargeId]['client'] == chargeModel.client && chargesData[chargeId]['quantity'] == chargeModel.quantity && chargesData[chargeId]['date'] == chargeModel.date)
           chargesDocument.child(chargeId).update(chargeModel.toJson());
       }

@@ -49,6 +49,10 @@ class ChargeBloc{
       //_chargeOutput.add(ChargesLoading());
       await _chargeProviderFirebase.editCharge(event.charge);
       _chargeOutput.add(ChargesLoaded(charges: await _chargeProviderFirebase.getCharges()));
+    }else if(event is DeleteCharge){
+      //_chargeOutput.add(ChargesLoading());
+      await _chargeProviderFirebase.editCharge(event.charge);
+      _chargeOutput.add(ChargesLoaded(charges: await _chargeProviderFirebase.getCharges()));
     }
     
   }

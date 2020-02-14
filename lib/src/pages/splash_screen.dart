@@ -1,5 +1,8 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:chicken_app/src/bloc/charge_bloc.dart';
+import 'package:chicken_app/src/bloc/charge_event.dart';
 import 'package:chicken_app/src/providers/charge_provider.dart';
+import 'package:chicken_app/src/providers/charge_provider_firebase.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatelessWidget {
@@ -8,17 +11,19 @@ class SplashScreen extends StatelessWidget {
   static const String _ACCESS_CODE = '1065843800';
   String _codeRegister;
 
+  final provider = new ChargeProviderFirebase();
+
   @override
   Widget build(BuildContext context) {
 
     final _screenSize = MediaQuery.of(context).size;
-    final provider = new ChargeProvider();
+    chargeBloc.sendChargeEvent.add(GetCharges());
 
     return Scaffold(
       body: Container(
           color: Color.fromRGBO(254, 206, 46,  1),
-          child: FutureBuilder(
-            future: provider.getCharges(),
+          child: StreamBuilder(
+            stream: chargeBloc.chargeStream,
             builder: (BuildContext context, AsyncSnapshot snapshot){
               if(snapshot.hasData){
                 return _buildForm(_screenSize, context);
@@ -62,6 +67,7 @@ class SplashScreen extends StatelessWidget {
                     key: SplashScreen.formVerificationKey,
                     child: TextFormField(
                       keyboardType: TextInputType.number,
+                      obscureText: true,
                       decoration: InputDecoration(
                           fillColor: Colors.white,
                           filled: true,

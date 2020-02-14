@@ -183,18 +183,20 @@ class DriverProfilePage extends StatelessWidget {
     Color color;
     Icon icon;
     switch(state){
+      case 'Generado':
+        color = Colors.redAccent;
+        break;
       case 'Enviado':
         color =  Color.fromRGBO(254, 206, 46,  1);
-        icon = Icon(Icons.flight_takeoff, color: Colors.blue);
         break;
       case 'Entregado':
         color = Colors.green;
-        icon = Icon(Icons.flight_land, color: Colors.white);
         break;
     }
     return CircleAvatar(
       child: icon,
       backgroundColor: color,
+      radius: 13.0,
     );
   }
 

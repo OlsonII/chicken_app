@@ -3,12 +3,7 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:chicken_app/src/bloc/charge_bloc.dart';
 import 'package:chicken_app/src/bloc/charge_event.dart';
 import 'package:chicken_app/src/bloc/charge_state.dart';
-import 'package:chicken_app/src/bloc/driver_bloc.dart';
-import 'package:chicken_app/src/bloc/driver_event.dart';
-import 'package:chicken_app/src/bloc/driver_state.dart';
 import 'package:chicken_app/src/models/charge_model.dart';
-import 'package:chicken_app/src/models/driver_model.dart';
-import 'package:chicken_app/src/providers/charge_provider.dart';
 import 'package:chicken_app/src/utils/choose_driver_dialog.dart';
 import 'package:chicken_app/src/utils/globals_keys.dart';
 import 'package:flutter/material.dart';
@@ -24,13 +19,13 @@ class ChargesPage extends StatefulWidget {
 class _ChargesPageState extends State<ChargesPage> {
   
   final todayDate = DateFormat('dd/MM/yyyy').format(DateTime.now()).toString();
+  final yesterdayDate = DateFormat('dd/MM/yyyy').format(DateTime.now().add(Duration(days: -1))).toString();
 
   @override
   Widget build(BuildContext context) {
 
     //chargeBloc.sendChargeEvent.add(GetChargesByDate(date: todayDate));
     chargeBloc.sendChargeEvent.add(GetCharges());
-
     return StreamBuilder(
       key: globalsKeys.driversDropDownKey,
       stream: chargeBloc.chargeStream,
@@ -49,36 +44,46 @@ class _ChargesPageState extends State<ChargesPage> {
   }
 
   _createItem(BuildContext context, ChargeModel charge) {
-    return Slidable(
-      actionPane: SlidableDrawerActionPane(),
-      actionExtentRatio: 0.17,
-      movementDuration: Duration(milliseconds: 50),
-      child: Container(
-        padding: EdgeInsets.only(left: 8.0, right: 8.0, top: 5.0),
-        child: ListTile(
-          title: Text(charge.destination + ' - ' + charge.client, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
-          subtitle: Text('Cantidad de cajas: ${charge.quantity}', style: TextStyle(fontSize: 15),),
-          leading: _chooseAvatar(charge.state),
+    if(charge.state != 'Cancelado')
+      return Slidable(
+        actionPane: SlidableDrawerActionPane(),
+        actionExtentRatio: 0.17,
+        movementDuration: Duration(milliseconds: 50),
+        child: Container(
+          padding: EdgeInsets.only(left: 8.0, right: 8.0, top: 5.0),
+          child: ListTile(
+            title: Text(charge.destination + ' - ' + charge.client, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+            subtitle: Text('Cantidad de cajas: ${charge.quantity}', style: TextStyle(fontSize: 15),),
+            leading: _chooseAvatar(charge.state),
+          ),
         ),
-      ),
-      actions: <Widget>[
-        IconSlideAction(
-          caption: 'Conductor',
-          icon: Icons.perm_identity,
-          color: Colors.red,
-          onTap: () => charge.driver != null ? _showDriverProfile(context, charge.driver) : _chooseDriverAlert(charge),
-        )
-      ],
-      secondaryActions: <Widget>[
-        IconSlideAction(
-          caption: 'Info',
-          icon: Icons.info,
-          color: Colors.blue,
-          onTap: () => _showChargeInfoAlert(charge)
-        ),
-        if(charge.state != 'Entregado') _chooseOptionOfCharge(context, charge.state, charge)
-      ],
-    );
+        actions: <Widget>[
+          IconSlideAction(
+            caption: 'Conductor',
+            icon: Icons.perm_identity,
+            color: Colors.red,
+            onTap: () => charge.driver != null ? _showDriverProfile(context, charge.driver) : _chooseDriverAlert(charge),
+          )
+        ],
+        secondaryActions: <Widget>[
+          IconSlideAction(
+              caption: 'Info',
+              icon: Icons.info,
+              color: Colors.blue,
+              onTap: () => _showChargeInfoAlert(charge)
+          ),
+          if(charge.state != 'Entregado') _chooseOptionOfCharge(context, charge.state, charge),
+          IconSlideAction(
+              caption: 'Cancelar',
+              icon: Icons.cancel,
+              color: Colors.red,
+              onTap: () {
+                charge.state = 'Cancelado';
+                chargeBloc.sendChargeEvent.add(DeleteCharge(charge: charge));
+              }
+          ),
+        ],
+      );
   }
 
   _chooseOptionOfCharge(BuildContext context, String state, ChargeModel charge){
