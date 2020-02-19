@@ -34,7 +34,6 @@ class DriverProfilePage extends StatelessWidget {
     }else{
       driverId = driverArguments['driverId'];
     }
-    //TODO: Optimizar estos metodos
 
     return StreamBuilder(
       stream: driverBloc.driverStream,

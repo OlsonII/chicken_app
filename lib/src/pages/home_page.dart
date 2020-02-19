@@ -8,6 +8,7 @@ import 'package:chicken_app/src/models/charge_model.dart';
 import 'package:chicken_app/src/pages/charges_page.dart';
 import 'package:chicken_app/src/pages/drivers_page.dart';
 import 'package:chicken_app/src/utils/globals_keys.dart';
+import 'package:chicken_app/src/utils/globals_variables.dart';
 import 'package:chicken_app/src/utils/register_charge_form.dart';
 import 'package:chicken_app/src/utils/register_driver_form.dart';
 import 'package:chicken_app/src/utils/register_due_form.dart';
@@ -28,6 +29,7 @@ class _HomePageState extends State<HomePage> {
   double _screenWidth = 0.0;
   double _screenHeight = 0.0;
   int chickensSends = 0;
+  DateTime dateSelected = DateTime.now();
 
   final todayDate = DateFormat('dd/MM/yyyy').format(DateTime.now()).toString();
   final yesterdayDate = DateFormat('dd/MM/yyyy').format(DateTime.now().add(Duration(days: -1))).toString();
@@ -158,6 +160,7 @@ class _HomePageState extends State<HomePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
+                _buildDateTimePicker(),
                 Padding(
                   padding: const EdgeInsets.only(top: 10, left: 30),
                   child: Text('Cantidad de pollos enviados:', style: TextStyle(color: Colors.black, fontSize: 20),),
@@ -219,5 +222,36 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  _buildDateTimePicker() {
+    return GestureDetector(
+      child: Center(
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: 8.0),
+          child: Text('${_formatDate(dateSelected)}', style: TextStyle(fontSize: 20.0),),
+        ),
+      ),
+      onTap: (){
+        showDatePicker(
+            context: globalsKeys.scaffoldKey.currentContext,
+            initialDate: DateTime.now(),
+            firstDate: DateTime(DateTime.now().year - 3),
+            lastDate: DateTime(DateTime.now().year + 1)
+        ).then((date){
+          if(date != null){
+            setState(() {
+              chargeBloc.sendChargeEvent.add(GetChargesByDate(date: _formatDate(date)));
+              globalsVariables.dateSelected = date;
+              dateSelected = date;
+            });
+          }
+        });
+      },
+    );
+  }
+
+  _formatDate(DateTime date){
+    return  DateFormat('dd/MM/yyyy').format(date).toString();
   }
 }

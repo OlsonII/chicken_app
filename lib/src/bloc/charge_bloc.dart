@@ -4,10 +4,12 @@ import 'package:chicken_app/src/bloc/charge_event.dart';
 import 'package:chicken_app/src/bloc/charge_state.dart';
 import 'package:chicken_app/src/providers/charge_provider.dart';
 import 'package:chicken_app/src/providers/charge_provider_firebase.dart';
+import 'package:chicken_app/src/utils/globals_variables.dart';
+import 'package:intl/intl.dart';
 
 class ChargeBloc{
 
-  final _chargeProvider = ChargeProvider();
+  //final _chargeProvider = ChargeProvider();
   final _chargeProviderFirebase = ChargeProviderFirebase();
 
   StreamController<ChargeEvent> _chargeInput = StreamController();
@@ -30,11 +32,11 @@ class ChargeBloc{
     if(event is AddCharge){
       //_chargeOutput.add(ChargesLoading());
       await _chargeProviderFirebase.addCharge(event.charge);
-      _chargeOutput.add(ChargesLoaded(charges: await _chargeProviderFirebase.getCharges()));
+      _chargeOutput.add(ChargesLoaded(charges: await _chargeProviderFirebase.getChargesByDate(_formatDate(globalsVariables.dateSelected))));
       
     }else if(event is GetCharges){
       //_chargeOutput.add(ChargesLoading());
-      _chargeOutput.add(ChargesLoaded(charges: await _chargeProviderFirebase.getCharges()));
+      _chargeOutput.add(ChargesLoaded(charges: await _chargeProviderFirebase.getChargesByDate(_formatDate(globalsVariables.dateSelected))));
     }else if(event is GetChargesByDate){
       //_chargeOutput.add(ChargesLoading());
       _chargeOutput.add(ChargesLoaded(charges: await _chargeProviderFirebase.getChargesByDate(event.date)));
@@ -44,17 +46,21 @@ class ChargeBloc{
     }else if(event is EditChargeState) {
       //_chargeOutput.add(ChargesLoading());
       await _chargeProviderFirebase.editCharge(event.charge);
-      _chargeOutput.add(ChargesLoaded(charges: await _chargeProviderFirebase.getCharges()));
+      _chargeOutput.add(ChargesLoaded(charges: await _chargeProviderFirebase.getChargesByDate(_formatDate(globalsVariables.dateSelected))));
     }else if(event is AddDriverToCharge){
       //_chargeOutput.add(ChargesLoading());
       await _chargeProviderFirebase.editCharge(event.charge);
-      _chargeOutput.add(ChargesLoaded(charges: await _chargeProviderFirebase.getCharges()));
+      _chargeOutput.add(ChargesLoaded(charges: await _chargeProviderFirebase.getChargesByDate(_formatDate(globalsVariables.dateSelected))));
     }else if(event is DeleteCharge){
       //_chargeOutput.add(ChargesLoading());
       await _chargeProviderFirebase.editCharge(event.charge);
-      _chargeOutput.add(ChargesLoaded(charges: await _chargeProviderFirebase.getCharges()));
+      _chargeOutput.add(ChargesLoaded(charges: await _chargeProviderFirebase.getChargesByDate(_formatDate(globalsVariables.dateSelected))));
     }
     
+  }
+
+  _formatDate(DateTime date){
+    return  DateFormat('dd/MM/yyyy').format(date).toString();
   }
 
 }
