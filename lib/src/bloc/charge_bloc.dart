@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:chicken_app/src/bloc/charge_event.dart';
 import 'package:chicken_app/src/bloc/charge_state.dart';
-import 'package:chicken_app/src/providers/charge_provider.dart';
+import 'package:chicken_app/src/providers/charge_provider_api.dart';
 import 'package:chicken_app/src/providers/charge_provider_firebase.dart';
 import 'package:chicken_app/src/utils/globals_variables.dart';
 import 'package:intl/intl.dart';

@@ -1,8 +1,9 @@
 
 import 'package:chicken_app/src/models/charge_model.dart';
+import 'package:chicken_app/src/providers/i_charge_provider.dart';
 import 'package:firebase_database/firebase_database.dart';
 
-class ChargeProviderFirebase {
+class ChargeProviderFirebase implements IChargeProvider {
 
   ChargeProviderFirebase(){
     FirebaseDatabase.instance.setPersistenceEnabled(true);
@@ -48,6 +49,8 @@ class ChargeProviderFirebase {
     });
     return charges;
   }
+
+  getChargesByState(String state){}
 
   getChargesByDriver(String driverName) async {
     List<ChargeModel> charges = new List();

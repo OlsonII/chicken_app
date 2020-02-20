@@ -1,7 +1,6 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:chicken_app/src/bloc/charge_bloc.dart';
 import 'package:chicken_app/src/bloc/charge_event.dart';
-import 'package:chicken_app/src/providers/charge_provider.dart';
 import 'package:chicken_app/src/providers/charge_provider_firebase.dart';
 import 'package:flutter/material.dart';
 

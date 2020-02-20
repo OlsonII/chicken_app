@@ -1,13 +1,13 @@
 import 'package:chicken_app/src/models/driver_model.dart';
+import 'package:chicken_app/src/providers/i_driver_provider.dart';
 import 'package:firebase_database/firebase_database.dart';
 
-class DriverProviderFirebase {
+class DriverProviderFirebase implements IDriverProvider {
 
   DriverProviderFirebase(){
     FirebaseDatabase.instance.setPersistenceEnabled(true);
     driversDocument.keepSynced(true);
   }
-
 
   static final db = FirebaseDatabase.instance.reference();
   static final driversDocument = db.child('drivers');

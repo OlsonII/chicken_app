@@ -2,7 +2,7 @@ import 'package:chicken_app/src/bloc/driver_bloc.dart';
 import 'package:chicken_app/src/bloc/driver_event.dart';
 import 'package:chicken_app/src/bloc/driver_state.dart';
 import 'package:chicken_app/src/models/driver_model.dart';
-import 'package:chicken_app/src/providers/driver_provider.dart';
+import 'package:chicken_app/src/providers/driver_provider_api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 

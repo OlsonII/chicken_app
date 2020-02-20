@@ -1,6 +1,6 @@
 import 'package:chicken_app/src/bloc/driver_event.dart';
 import 'package:chicken_app/src/bloc/driver_state.dart';
-import 'package:chicken_app/src/providers/driver_provider.dart';
+import 'package:chicken_app/src/providers/driver_provider_api.dart';
 import 'dart:async';
 
 import 'package:chicken_app/src/providers/driver_provider_firebase.dart';

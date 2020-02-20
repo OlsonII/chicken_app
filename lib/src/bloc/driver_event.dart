@@ -1,5 +1,5 @@
 import 'package:chicken_app/src/models/driver_model.dart';
-import 'package:chicken_app/src/providers/driver_provider.dart';
+import 'package:chicken_app/src/providers/driver_provider_api.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 

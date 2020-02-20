@@ -7,19 +7,18 @@ import 'package:chicken_app/src/bloc/driver_event.dart';
 import 'package:chicken_app/src/bloc/driver_state.dart';
 import 'package:chicken_app/src/models/charge_model.dart';
 import 'package:chicken_app/src/models/driver_model.dart';
-import 'package:chicken_app/src/providers/charge_provider.dart';
+import 'package:chicken_app/src/utils/globals_variables.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class DriverProfilePage extends StatelessWidget {
-  
-  final chargeProvider = new ChargeProvider();
+
   String driverName;
   String driverId;
   DriverModel driverModel;
 
   //TODO: Optimizar busqueda de conductor especifico para este page
-
 
   @override
   Widget build(BuildContext context) {
@@ -48,13 +47,16 @@ class DriverProfilePage extends StatelessWidget {
 
             chargeBloc.sendChargeEvent.add(GetChargesByDriver(driverName: driverModel.name));
 
-
             return Scaffold(
               appBar: AppBar(
                 backgroundColor: Color.fromRGBO(254, 206, 46,  1),
                 leading: IconButton(
                     icon: Icon(Icons.arrow_back_ios, color: Colors.black87,),
-                    onPressed: () => Navigator.pop(context)
+                    onPressed: () {
+                      //TODO: EXPERIMENTAL
+                      chargeBloc.sendChargeEvent.add(GetChargesByDate(date: DateFormat('dd/MM/yyyy').format(globalsVariables.dateSelected).toString() ));
+                      Navigator.pop(context);
+                    }
                 ),
                 actions: <Widget>[
                   IconButton(

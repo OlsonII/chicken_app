@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'package:chicken_app/src/models/driver_model.dart';
+import 'package:chicken_app/src/providers/i_driver_provider.dart';
 import 'package:http/http.dart' as http;
 
-class DriverProvider{
+class DriverProvider implements IDriverProvider{
 
   static const String _URL = 'http://192.168.0.28:3000/api/drivers';
 
@@ -63,6 +64,8 @@ class DriverProvider{
       return null;
     }
   }
+
+  getSpecifyDriverByName(String driverName){}
 
   Future<bool> editDriver(DriverModel driverModel) async {
     return await http.put(_URL+'/${driverModel.identification}', headers: {'content-type': 'application/json'}, body: driverModelToJson(driverModel))

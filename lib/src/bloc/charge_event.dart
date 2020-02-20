@@ -1,5 +1,5 @@
 import 'package:chicken_app/src/models/charge_model.dart';
-import 'package:chicken_app/src/providers/charge_provider.dart';
+import 'package:chicken_app/src/providers/charge_provider_api.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 

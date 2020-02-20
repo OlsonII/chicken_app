@@ -3,7 +3,7 @@ import 'package:chicken_app/src/bloc/charge_bloc.dart';
 import 'package:chicken_app/src/bloc/charge_event.dart';
 import 'package:chicken_app/src/models/charge_model.dart';
 import 'package:chicken_app/src/pages/home_page.dart';
-import 'package:chicken_app/src/providers/charge_provider.dart';
+import 'package:chicken_app/src/providers/charge_provider_api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:intl/intl.dart';
@@ -13,7 +13,7 @@ class ChargeForm extends StatelessWidget {
   static GlobalKey<FormState> formChargeKey = new GlobalKey<FormState>();
 
   final chargeModel = new ChargeModel();
-  final chargeProvider = new ChargeProvider();
+  final chargeProvider = new ChargeProviderApi();
 
   @override
   Widget build(BuildContext context) {
