@@ -1,9 +1,9 @@
 
-import 'package:chicken_app/src/models/charge_model.dart';
+import 'package:chicken_app/src/domain/charge.dart';
 
 class IChargeProvider {
 
-  addCharge(ChargeModel chargeModel){}
+  addCharge(Charge chargeModel){}
 
   getCharges(){}
 
@@ -13,6 +13,6 @@ class IChargeProvider {
 
   getChargesByDriver(String driverId){}
 
-  editCharge(ChargeModel chargeModel){}
+  editCharge(Charge chargeModel){}
 
 }

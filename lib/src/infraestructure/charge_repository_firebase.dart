@@ -1,6 +1,6 @@
 
-import 'package:chicken_app/src/models/charge_model.dart';
-import 'package:chicken_app/src/providers/i_charge_provider.dart';
+import 'package:chicken_app/src/domain/charge.dart';
+import 'package:chicken_app/src/infraestructure/i_charge_repository.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 class ChargeProviderFirebase implements IChargeProvider {
@@ -14,18 +14,18 @@ class ChargeProviderFirebase implements IChargeProvider {
   static final chargesDocument = db.child('charges');
 
 
-  addCharge(ChargeModel chargeModel){
+  addCharge(Charge chargeModel){
     chargesDocument.push().set(chargeModel.toJson());
   }
 
   getCharges() async {
-    List<ChargeModel> charges = new List();
+    List<Charge> charges = new List();
     await chargesDocument.orderByValue().once().then((DataSnapshot snapshot) {
       var chargesIds = snapshot.value.keys;
       var chargesData = snapshot.value;
 
       for(var chargeId in chargesIds){
-        charges.add(new ChargeModel.fromJson(chargesData[chargeId]));
+        charges.add(new Charge.fromJson(chargesData[chargeId]));
       }
 
     }).catchError((onError){
@@ -35,13 +35,13 @@ class ChargeProviderFirebase implements IChargeProvider {
   }
 
   getChargesByDate(String date) async {
-    List<ChargeModel> charges = new List();
+    List<Charge> charges = new List();
     await chargesDocument.once().then((DataSnapshot snapshot) {
       var chargesIds = snapshot.value.keys;
       var chargesData = snapshot.value;
 
       for(var chargeId in chargesIds){
-        if(chargesData[chargeId]['date'] == date) charges.add(new ChargeModel.fromJson(chargesData[chargeId]));
+        if(chargesData[chargeId]['date'] == date) charges.add(new Charge.fromJson(chargesData[chargeId]));
       }
 
     }).catchError((onError){
@@ -53,13 +53,13 @@ class ChargeProviderFirebase implements IChargeProvider {
   getChargesByState(String state){}
 
   getChargesByDriver(String driverName) async {
-    List<ChargeModel> charges = new List();
+    List<Charge> charges = new List();
     await chargesDocument.once().then((DataSnapshot snapshot) {
       var chargesIds = snapshot.value.keys;
       var chargesData = snapshot.value;
 
       for(var chargeId in chargesIds){
-        if(chargesData[chargeId]['driver'] == driverName) charges.add(new ChargeModel.fromJson(chargesData[chargeId]));
+        if(chargesData[chargeId]['driver'] == driverName) charges.add(new Charge.fromJson(chargesData[chargeId]));
       }
 
     }).catchError((onError){
@@ -68,7 +68,7 @@ class ChargeProviderFirebase implements IChargeProvider {
     return charges;
   }
 
-  editCharge(ChargeModel chargeModel) async {
+  editCharge(Charge chargeModel) async {
     await chargesDocument.once().then((DataSnapshot snapshot) {
 
       var chargesIds = snapshot.value.keys;

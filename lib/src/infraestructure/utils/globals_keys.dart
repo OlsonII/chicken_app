@@ -12,7 +12,6 @@ class GlobalsKeys {
   }
 
   GlobalKey get scaffoldKey => _scaffoldKey;
-  GlobalKey get driversDropDownKey => _driversDropDownKey;
 }
 
 GlobalsKeys globalsKeys = new GlobalsKeys();

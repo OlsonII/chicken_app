@@ -1,19 +1,38 @@
+
 import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:chicken_app/src/bloc/charge_bloc.dart';
-import 'package:chicken_app/src/bloc/charge_event.dart';
-import 'package:chicken_app/src/models/charge_model.dart';
-import 'package:chicken_app/src/pages/home_page.dart';
-import 'package:chicken_app/src/providers/charge_provider_api.dart';
+import 'package:chicken_app/src/application/charge_bloc.dart';
+import 'package:chicken_app/src/application/charge_event.dart';
+import 'package:chicken_app/src/domain/charge.dart';
+import 'package:chicken_app/src/infraestructure/charge_repository_api.dart';
+import 'package:chicken_app/src/infraestructure/utils/global_date.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_icons/flutter_icons.dart';
 import 'package:intl/intl.dart';
 
-class ChargeForm extends StatelessWidget {
+class ChargeForm extends StatefulWidget {
 
   static GlobalKey<FormState> formChargeKey = new GlobalKey<FormState>();
 
-  final chargeModel = new ChargeModel();
+  @override
+  _ChargeFormState createState() => _ChargeFormState();
+}
+
+class _ChargeFormState extends State<ChargeForm> {
+
+  final chargeModel = new Charge();
   final chargeProvider = new ChargeProviderApi();
+
+  FocusNode _destinationFocus;
+  FocusNode _clientFocus;
+  FocusNode _quantityFocus;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _destinationFocus = FocusNode();
+    _clientFocus = FocusNode();
+    _quantityFocus = FocusNode();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +64,7 @@ class ChargeForm extends StatelessWidget {
 
   Form _buildForm(BuildContext context, double _screenHeight, double _screenWidth) {
     return Form(
-      key: formChargeKey,
+      key: ChargeForm.formChargeKey,
       autovalidate: false,
       child: Scrollbar(
         child: SingleChildScrollView(
@@ -53,14 +72,14 @@ class ChargeForm extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               Center(
-                child: Text('Registrar Encargo', style: TextStyle(color: Colors.black, fontSize: 22.0),),
+                child: Text('Registrar Encargo', style: TextStyle(color: Colors.black, fontSize: 22.0, fontWeight: FontWeight.bold),),
               ),
               SizedBox(height: _screenHeight*0.02),
-              _buildDestinationfield(),
+              _buildDestinationField(context),
               SizedBox(height: _screenHeight*0.02),
-              _buildClientField(),
+              _buildClientField(context),
               SizedBox(height: _screenHeight*0.02),
-              _buildQuantityField(),
+              _buildQuantityField(context),
               SizedBox(height: _screenHeight*0.05),
               _buildButton(context, _screenWidth)
             ],
@@ -70,9 +89,11 @@ class ChargeForm extends StatelessWidget {
     );
   }
 
-  TextFormField _buildQuantityField() {
+  TextFormField _buildQuantityField(BuildContext context) {
     return TextFormField(
+      focusNode: _quantityFocus,
       cursorColor: Colors.blueGrey,
+      textInputAction: TextInputAction.done,
       decoration: InputDecoration(
         filled: true,
         icon: Icon(Icons.dialpad),
@@ -81,12 +102,18 @@ class ChargeForm extends StatelessWidget {
       ),
       keyboardType: TextInputType.number,
       onSaved: (value) => chargeModel.quantity = int.parse(value),
+      onFieldSubmitted: (_){
+        _showAlert(context);
+      },
     );
   }
 
-  TextFormField _buildClientField() {
+  TextFormField _buildClientField(BuildContext context) {
     return TextFormField(
+      focusNode: _clientFocus,
       cursorColor: Colors.blueGrey,
+      textInputAction: TextInputAction.next,
+      textCapitalization: TextCapitalization.words,
       decoration: InputDecoration(
         filled: true,
         icon: Icon(Icons.perm_identity),
@@ -95,12 +122,18 @@ class ChargeForm extends StatelessWidget {
       ),
       keyboardType: TextInputType.text,
       onSaved: (value) => chargeModel.client = value,
+      onFieldSubmitted: (_){
+        _fieldFocusChange(context, _clientFocus, _quantityFocus);
+      }
     );
   }
 
-  TextFormField _buildDestinationfield() {
+  TextFormField _buildDestinationField(BuildContext context) {
     return TextFormField(
+      focusNode: _destinationFocus,
       cursorColor: Colors.blueGrey,
+      textInputAction: TextInputAction.next,
+      textCapitalization: TextCapitalization.words,
       decoration: InputDecoration(
         filled: true,
         icon: Icon(Icons.flight_takeoff),
@@ -109,6 +142,9 @@ class ChargeForm extends StatelessWidget {
       ),
       keyboardType: TextInputType.text,
       onSaved: (value) => chargeModel.destination = value,
+      onFieldSubmitted: (_){
+        _fieldFocusChange(context, _destinationFocus, _clientFocus);
+      }
     );
   }
 
@@ -131,7 +167,8 @@ class ChargeForm extends StatelessWidget {
   }
 
   _showAlert(BuildContext context){
-    formChargeKey.currentState.save();
+    _unfocusLast(context);
+    ChargeForm.formChargeKey.currentState.save();
     return AwesomeDialog(
       context: context,
       dialogType: DialogType.INFO,
@@ -144,10 +181,28 @@ class ChargeForm extends StatelessWidget {
   }
 
   _submitForm(){
-    print('registro completado');
+    ChargeForm.formChargeKey.currentState.reset();
     chargeModel.state = 'Generado';
-    chargeModel.date = DateFormat('dd/MM/yyyy').format(DateTime.now()).toString();
+    chargeModel.date = DateFormat('dd/MM/yyyy').format(globalDate.dateSelected).toString();
     chargeBloc.sendChargeEvent.add(AddCharge(charge: chargeModel));
-    formChargeKey.currentState.reset();
+  }
+
+  _unfocusLast(BuildContext context){
+    FocusScope.of(context).unfocus();
+  }
+
+  _fieldFocusChange(BuildContext context, FocusNode currentFocus, FocusNode nextFocus) {
+    currentFocus.unfocus();
+    FocusScope.of(context).requestFocus(nextFocus);
+  }
+
+  @override
+  void dispose() {
+
+    _quantityFocus.dispose();
+    _clientFocus.dispose();
+    _destinationFocus.dispose();
+
+    super.dispose();
   }
 }

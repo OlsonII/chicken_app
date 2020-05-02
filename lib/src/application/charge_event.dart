@@ -1,5 +1,5 @@
-import 'package:chicken_app/src/models/charge_model.dart';
-import 'package:chicken_app/src/providers/charge_provider_api.dart';
+import 'package:chicken_app/src/domain/charge.dart';
+import 'package:chicken_app/src/infraestructure/charge_repository_api.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
@@ -10,7 +10,7 @@ abstract class ChargeEvent extends Equatable {
 
 class AddCharge extends ChargeEvent {
 
-  final ChargeModel charge;
+  final Charge charge;
 
   const AddCharge({@required this.charge}) : assert(charge != null);
 
@@ -19,7 +19,7 @@ class AddCharge extends ChargeEvent {
 
 class GetCharges extends ChargeEvent {
 
-  final List<ChargeModel> charges = new List();
+  final List<Charge> charges = new List();
 
   List<Object> get props => [charges];
 }
@@ -48,7 +48,7 @@ class GetChargesByDriver extends ChargeEvent {
 
 class EditChargeState extends ChargeEvent {
 
-  final ChargeModel charge;
+  final Charge charge;
 
   const EditChargeState({@required this.charge}) : assert(charge != null);
 
@@ -59,7 +59,7 @@ class EditChargeState extends ChargeEvent {
 
 class AddDriverToCharge extends ChargeEvent {
 
-  final ChargeModel charge;
+  final Charge charge;
 
   const AddDriverToCharge({@required this.charge}) : assert(charge != null);
 
@@ -70,7 +70,7 @@ class AddDriverToCharge extends ChargeEvent {
 
 class DeleteCharge extends ChargeEvent {
 
-final ChargeModel charge;
+final Charge charge;
 
 const DeleteCharge({@required this.charge}) : assert(charge != null);
 
